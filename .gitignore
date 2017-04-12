@@ -19,3 +19,8 @@ composer.phar
 
 #mac DS
 .DS_Store
+#sublime text
+.phpintel
+
+#ignorando db.php
+config/db.php
