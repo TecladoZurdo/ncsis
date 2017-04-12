@@ -21,6 +21,3 @@ composer.phar
 .DS_Store
 #sublime text
 .phpintel
-
-#ignorando db.php
-config/db.php
