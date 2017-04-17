@@ -81,9 +81,10 @@ return [
 
 ### Directorio Virtual
 Con xampp se edita httpd.conf y se descomenta de tal forma que quede de la siguiente manera:
+```
  # Virtual hosts
 Include etc/extra/httpd-vhosts.conf
-
+```
 Se edita posteriormente el archivo httpd-vhosts.conf
 y comenta las lineas que posee y se añade la sisguiente lineas:
 
