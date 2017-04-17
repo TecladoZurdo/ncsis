@@ -298,8 +298,10 @@ class CalculoController extends Controller {
                 $valores['vac_acu_cal'] = 0;
                 $valores['vac_dias_cal'] = 30;
                 $valores['vac_dias_lab'] = 26;
-                $valores['num_per_cal']= 0;
-                $valores['num_per_lab']= 0;
+                $permisosCalendario =$this->vac_cal($id);
+                $permisosLaborales =$this->vac_lab($id);
+                $valores['num_per_cal']= $permisosCalendario;
+                $valores['num_per_lab']= $permisosLaborales;
                 $valores['calculo_cal_diascal']=30;
                 $valores['calculo_cal_diaslab']=26;
                 $intervalo = date_diff($fecha_ingreso,$fecha_actual);

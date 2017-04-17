@@ -50,7 +50,7 @@ $(function() {
 function total(Fun_Id) {
     var jsonData = $.ajax({
         type: 'POST',
-        url: '/sisvac/web/vacacion/vacaciones?id=' + Fun_Id,
+        url: '../vacacion/vacaciones?id=' + Fun_Id,
         dataType: 'json',
         async: false}).responseText;
     var obj = jQuery.parseJSON(jsonData);

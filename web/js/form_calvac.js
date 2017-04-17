@@ -83,7 +83,7 @@ function calcular_duracion_cal(fecha_ini, fecha_fin) {
 function diasley(Fun_Id, fecha) {
     var jsonData = $.ajax({
         type: 'POST',
-        url: '/sisvac/web/calculo/diasley?id=' + Fun_Id + '&fecha=' + fecha,
+        url: '../calculo/diasley?id=' + Fun_Id + '&fecha=' + fecha,
         dataType: 'json',
         async: false}).responseText;
     var obj = jQuery.parseJSON(jsonData);
@@ -102,7 +102,7 @@ function permisos() {
     var jsonData = $.ajax({
         type: 'POST',
         data: 'id=' + $('#calvac-fun_id').val() + '&fecha_inicio=' + $('#calvac-cal_fechainicio').val() + '&fecha_fin=' + $('#calvac-cal_fechafin').val(),
-        url: '/sisvac/web/calculo/permisos',
+        url: '../calculo/permisos',
         dataType: 'json',
         async: false}).responseText;
     var obj = jQuery.parseJSON(jsonData);
@@ -114,7 +114,7 @@ function listapermisos() {
     var jsonData = $.ajax({
         type: 'POST',
         data: 'id=' + $('#calvac-fun_id').val() + '&fecha_inicio=' + $('#calvac-cal_fechainicio').val() + '&fecha_fin=' + $('#calvac-cal_fechafin').val(),
-        url: '/sisvac/web/calculo/listapermisos',
+        url: '../calculo/listapermisos',
         dataType: 'json',
         async: false}).responseText;
     var obj = jQuery.parseJSON(jsonData);
@@ -133,7 +133,7 @@ function total(id) {
     var jsonData = $.ajax({
         type: 'POST',
         //data: 'id=' + id,
-        url: '/sisvac/web/calculo/total?id=' + id,
+        url: '../calculo/total?id=' + id,
         dataType: 'json',
         async: false}).responseText;
     var obj = jQuery.parseJSON(jsonData);
