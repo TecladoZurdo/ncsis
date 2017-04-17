@@ -298,6 +298,15 @@ class CalculoController extends Controller {
                 $valores['vac_acu_cal'] = 0;
                 $valores['vac_dias_cal'] = 30;
                 $valores['vac_dias_lab'] = 26;
+                $valores['num_per_cal']= 0;
+                $valores['num_per_lab']= 0;
+                $valores['calculo_cal_diascal']=30;
+                $valores['calculo_cal_diaslab']=26;
+                $intervalo = date_diff($fecha_ingreso,$fecha_actual);
+                $dias = $intervalo->format('%a');
+                $saldo = floor($dias*30 / 365);
+                $valores['calculo_cal_salcal']=$saldo;
+                $valores['calculo_cal_sallab']=$saldo -4;
             
         }else {
 

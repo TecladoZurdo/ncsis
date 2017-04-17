@@ -87,6 +87,13 @@ function calcularVacacionesPeriodicas(Fun_Id){
     $('#vac_acu_cal').val(obj.vac_acu_cal);
     $('#vac_dias_lab').val(obj.vac_dias_lab);
     $('#vac_dias_cal').val(obj.vac_dias_cal);
+    $('#num_per_cal').val(obj.num_per_cal);
+    $('#num_per_lab').val(obj.num_per_lab);
+    $('#calculo-cal_diascal').val(obj.calculo_cal_diascal);
+    $('#calculo-cal_diaslab').val(obj.calculo_cal_diaslab);
+    $('#calculo-cal_salcal').val(obj.calculo_cal_salcal);
+    $('#calculo-cal_sallab').val(obj.calculo_cal_sallab);
+
 }
     
 function intervalo(Fun_Id) {
