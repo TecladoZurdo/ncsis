@@ -253,6 +253,60 @@ class CalculoController extends Controller {
         echo json_encode($valores);
     }
 
+/**
+ * Funcion que procesa los calculos para las vacaciones 
+ *   periodicas
+ **/
+
+ public function actionVacaciones_periodicas($id){
+    $funcionario = $this->findFuncionario($id);
+    $query = Calculo::find();
+    $fecha_base = new \DateTime('2015-01-01');
+    $fecha_actual = new \DateTime(date('Y-m-d'));
+    $count = $query->select('count(*)')->from('calculo')->where(['Fun_Id' => $id])->scalar();
+    if ($count > 0 ){ //si ya tiene un calculo anterior
+
+    }else {  // si es primera vez
+         $fecha_ingreso = new \DateTime($funcionario->Fun_FechaIngreso);
+        if ($fecha_ingreso > $fecha_base){
+            $anio = $fecha_ingreso->format('Y') + 1;
+                // si inicia el 1ro de enero termina el 31 de diciembre del mismo year
+                if ($fecha_ingreso->format('m') == '01' and $fecha_ingreso->format('d') == '01') {
+                    $valores['fecha_inicio'] = $fecha_inicio->format('Y-m-d');
+                    $fecha_final = $fecha_ingreso->format('Y') . "-" . "12-31";
+                    $fecha_fin = new \DateTime($fecha_final);
+                    $valores['fecha_fin'] = $fecha_fin->format('Y-m-d');
+                } else { // se calcula la fecha final sumando un year
+                    /**
+                     * “Un año es bisiesto si es divisible entre 4, 
+                     * excepto aquellos divisibles entre 100 pero no entre 400.”
+                     */
+                    if ((($anio % 4) == 0 && $anio % 100 != 0) || $anio % 400 == 0)
+                        $diasAnuales = new \DateInterval('P365D'); // 366 bisiesto menos 1 dia
+                    else
+                        $diasAnuales = new \DateInterval('P364D'); // 365 natural menos 1 dia
+                    $fecha_fin = new \DateTime($funcionario->Fun_FechaIngreso);
+                    $fecha_fin->add($diasAnuales);
+                    $valores['fecha_inicio'] = $fecha_ingreso->format('Y-m-d');
+                    $valores['fecha_fin'] = $fecha_fin->format('Y-m-d');
+
+                }
+                $valores['anio']= $fecha_ingreso->format('Y');
+                $valores['dias_ley_lab'] = 0;
+                $valores['dias_ley_cal'] = 0;
+                $valores['vac_acu_lab'] = 0;
+                $valores['vac_acu_cal'] = 0;
+                $valores['vac_dias_cal'] = 30;
+                $valores['vac_dias_lab'] = 26;
+            
+        }else {
+
+        }
+    }
+    echo json_encode($valores);
+ }
+ 
+
     //intervalo de fechas para calculo periodico
     public function actionFechas($id) {
         $funcionario = $this->findFuncionario($id);
@@ -412,8 +466,10 @@ class CalculoController extends Controller {
     }
 
     private function diasAntiguedad($anio_ini, $anio_fin) {
+        
         $dias_cal = $anio_fin - $anio_ini - 5;
         $dias_lab = $dias_cal;
+
         if (($dias_cal > 6) && ($dias_cal <= 14)) {
             $dias_lab = $dias_cal - 2;
         } else if ($dias_cal >= 15) {

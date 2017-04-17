@@ -90,6 +90,7 @@ class FuncionarioSearch extends Funcionario
                 $new_row['fecha']=$funcionario->Fun_FechaIngreso;
                 $new_row['codigo']=$funcionario->Fun_Codigo;
                 $new_row['estado']=$funcionario->Fun_Estado;
+                $new_row['losep']=$funcionario->losep;
                 $row_set[] = $new_row;
             }
             echo json_encode($row_set);

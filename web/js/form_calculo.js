@@ -1,26 +1,29 @@
+var losep =0;
 $(function () {
     $("#funcionario").autocomplete({
         source: "buscarfuncionario", //de donde jala los datos
         minLength: 2,
         select: function (event, ui) {
             $("#calculo-fun_id").val(ui.item.id);
-            //$("#usuario_saldo_diferido").val(ui.item.saldo);
             $("#Fun_Nombre").val(ui.item.label);
             $("#fecha_ing").val(ui.item.fecha);
             $("#codigo").val(ui.item.codigo);
             $("#estado").val(ui.item.estado);
-            //$('num_permi').focus();
-            intervalo(ui.item.id);
-            //permisos();
-            //dias();
+            losep = ui.item.losep;
+            //console.log(losep);
+            if (losep){ // para los nuevos se realizar nuevos calculos
+             calcularVacacionesPeriodicas(ui.item.id);
+            }else {
+            intervalo(ui.item.id);    
+            }
+            
+            //console.log(ui.item.id);
 
         }
     });
 
-    $('#num_permisos').focus(function () {
-
-
-    });
+/*    $('#num_permisos').focus(function () {
+    });*/
     $('#vac_his').change(function () {
         $('#calculo-cal_dias').val(dias.toFixed(2));
     });
@@ -66,16 +69,36 @@ $(function () {
      */
 });
 
-function intervalo(Fun_Id) {
-    var urlCalculo=$('#vacaciones_periodicas').attr('action');
-    console.log(urlCalculo);
+function calcularVacacionesPeriodicas(Fun_Id){
+    //console.log(3);
     var jsonData = $.ajax({
         type: 'POST',
-        url: '/calculo/fechas?id=' + Fun_Id,
+        url: 'vacaciones_periodicas?id=' + Fun_Id,
         dataType: 'json',
         async: false}).responseText;
     var obj = jQuery.parseJSON(jsonData);
-
+    console.log(obj);
+    $('#calculo-cal_fechainicio').val(obj.fecha_inicio);
+    $('#calculo-cal_fechafin').val(obj.fecha_fin);
+    $('#calculo-cal_anio').val(obj.anio);
+    $('#dias_ley_lab').val(obj.dias_ley_lab);
+    $('#dias_ley_cal').val(obj.dias_ley_cal);
+    $('#vac_acu_lab').val(obj.vac_acu_lab);
+    $('#vac_acu_cal').val(obj.vac_acu_cal);
+    $('#vac_dias_lab').val(obj.vac_dias_lab);
+    $('#vac_dias_cal').val(obj.vac_dias_cal);
+}
+    
+function intervalo(Fun_Id) {
+    //var urlCalculo=$('#vacaciones_periodicas').attr('action');
+    //console.log(urlCalculo);
+    var jsonData = $.ajax({
+        type: 'POST',
+        url: 'fechas?id=' + Fun_Id,
+        dataType: 'json',
+        async: false}).responseText;
+    var obj = jQuery.parseJSON(jsonData);
+    console.log(obj);
     $('#calculo-cal_fechainicio').val(obj.fecha_inicio);
     $('#calculo-cal_fechafin').val(obj.fecha_fin);
     $('#calculo-cal_anio').val(obj.anio);
@@ -154,7 +177,7 @@ function permisos(tipo) {
     var jsonData = $.ajax({
         type: 'POST',
         data: 'id=' + $('#calculo-fun_id').val() + '&fecha_inicio=' + $('#calculo-cal_fechainicio').val() + '&fecha_fin=' + $('#calculo-cal_fechafin').val(),
-        url: '/calculo/permisos',
+        url: 'permisos',
         dataType: 'json',
         async: false}).responseText;
     var obj = jQuery.parseJSON(jsonData);
@@ -177,7 +200,7 @@ function listapermisos() {
     var jsonData = $.ajax({
         type: 'POST',
         data: 'id=' + $('#calculo-fun_id').val() + '&fecha_inicio=' + $('#calculo-cal_fechainicio').val() + '&fecha_fin=' + $('#calculo-cal_fechafin').val(),
-        url: '/calculo/listapermisos',
+        url: 'listapermisos',
         dataType: 'json',
         async: false}).responseText;
     var obj = jQuery.parseJSON(jsonData);
@@ -208,7 +231,7 @@ function calcular_duracion(fecha_ini, fecha_fin) {
     return vac;
 }
 function calcular_duracion_cal(fecha_ini, fecha_fin) {
-    //alert(fecha_fin+" "+fecha_ini)
+
     var dias = 0;
     if (fecha_fin !== '') {
         var aFecha1 = fecha_ini.split('-');
@@ -235,7 +258,6 @@ function total_vac_lab() {
     $("#calculo-cal_sallab").val(suma.toFixed(2));
 }
 function total_vac_cal() {
-    //alert("llego");
     var dias_cal = $("#calculo-cal_diascal").val();
     var acu_lab = $("#vac_acu_cal").val();
     var suma = parseFloat('0');
