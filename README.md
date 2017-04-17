@@ -37,7 +37,7 @@ en [getcomposer.org](http://getcomposer.org/doc/00-intro.md#installation-nix).
 Si ya lo tiene instalado use los siquientes comandos antes de descagar el proyecto:
 
 ~~~
-php composer.phar global require "fxp/composer-asset-plugin:^1.2.0"
+composer global require "fxp/composer-asset-plugin:^1.2.0"
 ~~~
 
 Ahora debe clonar el proyecto hacia su directorio de publicaci[on de html.
@@ -79,7 +79,13 @@ return [
 - Refer to the README in the `tests` directory for information specific to basic application tests.
 
 
+### Directorio Virtual
+Con xampp se edita httpd.conf y se descomenta de tal forma que quede de la siguiente manera:
+ # Virtual hosts
+Include etc/extra/httpd-vhosts.conf
 
+Se edita posteriormente el archivo httpd-vhosts.conf
+y comenta las lineas que posee y se añade la sisguiente lineas:
 
 ```
 <VirtualHost *:80>
@@ -90,3 +96,17 @@ return [
     CustomLog "logs/sisvac-access_log" common
 </VirtualHost>
 ```
+Si deseamos mantener el ingreso a localhost añadir
+```
+<VirtualHost *:80>
+    ServerAdmin coreo@electronico
+    DocumentRoot "/opt/lampp/htdocs"
+    ServerName  localhost
+    ErrorLog "logs/localhost-error_log"
+    CustomLog "logs/localhost-access_log" common
+</VirtualHost>
+```
+En linux editar el archivo /etc/hosts
+
+127.0.0.1 localhost.localdomain localhost sisvac
+::1   localhost.localdomain localhost sisvac
