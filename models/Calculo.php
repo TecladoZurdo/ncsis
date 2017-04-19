@@ -35,7 +35,8 @@ class Calculo extends \yii\db\ActiveRecord
             [['Cal_FechaInicio', 'Cal_FechaFin', 'Cal_DiasCal','Cal_DiasLab','Cal_SalCal','Cal_SalLab', 'Cal_Anio', 'Fun_Id'], 'required'],
             [['Cal_FechaInicio', 'Cal_FechaFin'], 'safe'],
             [['Cal_Anio', 'Fun_Id'], 'integer'],
-            [['Cal_DiasCal','Cal_DiasLab','Cal_SalCal','Cal_SalLab'],'number']
+            [['Cal_DiasCal','Cal_DiasLab','Cal_SalCal','Cal_SalLab'],'number'],
+            [['activo'],'boolean']
         ];
     }
 

@@ -82,12 +82,23 @@ class CalculoController extends Controller {
      * @return mixed
      */
     public function actionCreate() {
-        $model = new Calculo();
+        $CalculoActual = new Calculo();
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->Cal_Id]);
+        if ($CalculoActual->load(Yii::$app->request->post())) {
+            $CalculoAnterior= Calculo::findOne(['Fun_Id'=>$CalculoActual->Fun_Id,'activo'=>true]);
+            if ($CalculoAnterior === null){
+                $CalculoActual->save();
+            }else{
+            Calculo::getDb()->transaction(function($db) use ($CalculoActual,$CalculoAnterior){
+                $CalculoAnterior->activo = false;
+                $CalculoActual->save();
+            });    
+            }
+            
+            
+            return $this->redirect(['view', 'id' => $CalculoActual->Cal_Id]);
         } else {
-            return $this->render('create', [ 'model' => $model,]);
+            return $this->render('create', [ 'model' => $CalculoActual,]);
         }
     }
 
@@ -263,8 +274,11 @@ class CalculoController extends Controller {
     $query = Calculo::find();
     $fecha_base = new \DateTime('2015-01-01');
     $fecha_actual = new \DateTime(date('Y-m-d'));
-    $count = $query->select('count(*)')->from('calculo')->where(['Fun_Id' => $id])->scalar();
+    // da el ultimo calculo realizado
+    $count = $query->select('count(*)')->from('calculo')->where(['Fun_Id' => $id,'activo'=>true])->scalar();
     if ($count > 0 ){ //si ya tiene un calculo anterior
+
+        //-- sumara saldos anteriores y calcular nuevo periodo
 
     }else {  // si es primera vez
          $fecha_ingreso = new \DateTime($funcionario->Fun_FechaIngreso);
@@ -291,24 +305,42 @@ class CalculoController extends Controller {
                     $valores['fecha_fin'] = $fecha_fin->format('Y-m-d');
 
                 }
+
+                $diasCalendario=30;
+
                 $valores['anio']= $fecha_ingreso->format('Y');
                 $valores['dias_ley_lab'] = 0;
                 $valores['dias_ley_cal'] = 0;
                 $valores['vac_acu_lab'] = 0;
                 $valores['vac_acu_cal'] = 0;
-                $valores['vac_dias_cal'] = 30;
-                $valores['vac_dias_lab'] = 26;
+                $valores['vac_dias_cal'] = $diasCalendario;
+                $valores['vac_dias_lab'] = $diasCalendario-8;
                 $permisosCalendario =$this->vac_cal($id);
                 $permisosLaborales =$this->vac_lab($id);
                 $valores['num_per_cal']= $permisosCalendario;
                 $valores['num_per_lab']= $permisosLaborales;
-                $valores['calculo_cal_diascal']=30;
-                $valores['calculo_cal_diaslab']=26;
-                $intervalo = date_diff($fecha_ingreso,$fecha_actual);
-                $dias = $intervalo->format('%a');
-                $saldo = floor($dias*30 / 365);
+                $valores['calculo_cal_diascal']=$diasCalendario;
+                $valores['calculo_cal_diaslab']=$diasCalendario-8;
+                
+
+                  /** si la fecha de ingreso sumado un periodo es igual o menor
+                * a la fecha actual permite guardar el periodo
+                * de lo contrario no permite
+                */
+                if ($fecha_fin <= $fecha_actual){
+                    $dias=365;
+                    $saldo = floor($dias*30 / 365);
+                    $valores['guardar']=1;
+                }else {
+                    $intervalo = date_diff($fecha_ingreso,$fecha_actual);
+                    $dias = $intervalo->format('%a');
+                    $saldo = floor($dias*30 / 365);
+                    $valores['guardar']=0;
+                }
+
                 $valores['calculo_cal_salcal']=$saldo;
-                $valores['calculo_cal_sallab']=$saldo -4;
+                $valores['calculo_cal_sallab']=$saldo -8;
+                
             
         }else {
 

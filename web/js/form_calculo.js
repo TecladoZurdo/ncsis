@@ -93,6 +93,13 @@ function calcularVacacionesPeriodicas(Fun_Id){
     $('#calculo-cal_diaslab').val(obj.calculo_cal_diaslab);
     $('#calculo-cal_salcal').val(obj.calculo_cal_salcal);
     $('#calculo-cal_sallab').val(obj.calculo_cal_sallab);
+    if (obj.guardar){
+        $("#div_regresar").hide();
+        $("#div_guardar").show();
+    }else {
+        $("#div_regresar").show();
+        $("#div_guardar").hide();
+    }
 
 }
     
