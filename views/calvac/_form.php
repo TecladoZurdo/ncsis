@@ -101,8 +101,8 @@ use yii\helpers\Url;
 
 
     </div>
-    <a href="<?php echo Url::base().'/calculo/buscarfuncionario';  ?>" id="link_funcionario" />
-    <a href="<?php echo Url::base().'/calvac/ultimafecha?id=';  ?>" id="link_fecha" />
+    <a href="<?php echo Url::base().'../calculo/buscarfuncionario';  ?>" id="link_funcionario" />
+    <a href="<?php echo Url::base().'../calvac/ultimafecha?id=';  ?>" id="link_fecha" />
 
     <?php ActiveForm::end(); ?>
 
