@@ -4,9 +4,6 @@ use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use yii\helpers\Url;
 
-/* @var $this yii\web\View */
-/* @var $model app\models\Calculo */
-/* @var $form yii\widgets\ActiveForm */
 ?>
 
 <div class="calculo-form">
@@ -76,7 +73,6 @@ use yii\helpers\Url;
             <?php
             echo Html::label('Días por Antiguedad');
             echo Html::textInput('dias_ley_cal', '', ['id' => 'dias_ley_cal', 'class' => 'form-control', 'readonly' => 'readonly']);
-            //echo Html::hiddenInput('dias_ley_sin', '', ['id' => 'dias_ley_sin', 'class' => 'form-control', 'readonly' => 'readonly']);
             echo Html::label('Días devengados hasta la fecha');
             echo Html::textInput('dias_cal_cal', '', ['id' => 'dias_cal_cal', 'class' => 'form-control', 'readonly' => 'readonly']);
 
@@ -132,32 +128,22 @@ use yii\helpers\Url;
 
         </div>
 
-
-
-
     </div>
-
-
-
-
 
 
     <div id="div_lista" class="col-lg-8" style="clear: both">
         <h2>Detalle Descuentos</h2>
         <br>
-
-
     </div>
 
 </div>
 <br>
 
 
-
 <?php ActiveForm::end(); ?>
 
 <?php
-$url = Url::base() . '@web/js/form_calculo01.js';
+$url = Url::base().'@web/js/form_calculoProporcional.js';
 $this->registerJsFile($url, ['depends' => [\yii\web\JqueryAsset::className(), \yii\jui\JuiAsset::className()]]);
 ?>
 
@@ -166,7 +152,6 @@ $this->registerJsFile($url, ['depends' => [\yii\web\JqueryAsset::className(), \y
         <h4>Elaborado Por:</h4>
         
         <br>
-
 
     </div>
     

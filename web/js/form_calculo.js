@@ -1,4 +1,4 @@
-var losep =0;
+var loep =0;
 $(function () {
     $("#funcionario").autocomplete({
         source: "buscarfuncionario", //de donde jala los datos
@@ -9,9 +9,9 @@ $(function () {
             $("#fecha_ing").val(ui.item.fecha);
             $("#codigo").val(ui.item.codigo);
             $("#estado").val(ui.item.estado);
-            losep = ui.item.losep;
-            //console.log(losep);
-            if (losep){ // para los nuevos se realizar nuevos calculos
+            loep = ui.item.losep;
+            //console.log(loep);
+            if (loep){ // para los nuevos se realizar nuevos calculos
              calcularVacacionesPeriodicas(ui.item.id);
             }else {
             intervalo(ui.item.id);    

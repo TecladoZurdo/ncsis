@@ -1,21 +1,14 @@
 $(function () {
     $("#funcionario").autocomplete({
         source: $("#link_funcionario").attr('href'), //de donde jala los datos
-        //source: "buscarfuncionario",
         minLength: 2,
         select: function (event, ui) {
             $("#calvac-fun_id").val(ui.item.id);
-            //$("#usuario_saldo_diferido").val(ui.item.saldo);
             $("#Fun_Nombre").val(ui.item.label);
             total(ui.item.id);
             $("#fecha_ing").val(ui.item.fecha);
             $("#codigo").val(ui.item.codigo);
             ultima_fecha(ui.item.id);
-            //diasley(ui.item.id);
-            //$('num_permi').focus();
-            //intervalo(ui.item.id)
-            //permisos();
-            //dias();
 
         }
     });
@@ -123,8 +116,6 @@ function listapermisos() {
 
     obj.forEach(function (item, i) {
         $('#div_lista').append('<div class="col-lg-3" style="clear:both">' + item.permiso + '</div>');
-        //$('#div_lista').append('<div class="col-lg-2">' + item.fecha_inicio + '</div>');
-        //$('#div_lista').append('<div class="col-lg-2">' + item.fecha_final + '</div>');
         $('#div_lista').append('<div class="col-lg-2">' + item.dias + '</div>');
     });
 }
@@ -132,12 +123,10 @@ function listapermisos() {
 function total(id) {
     var jsonData = $.ajax({
         type: 'POST',
-        //data: 'id=' + id,
         url: '../calculo/total?id=' + id,
         dataType: 'json',
         async: false}).responseText;
     var obj = jQuery.parseJSON(jsonData);
-    //$('#saldo_lab').val(obj.saldo_lab);
     $('#calvac-cal_saldo').val(obj.saldo_cal);
 
 

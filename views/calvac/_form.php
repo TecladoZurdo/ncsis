@@ -4,9 +4,6 @@ use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use yii\helpers\Url;
 
-/* @var $this yii\web\View */
-/* @var $model app\models\Calvac */
-/* @var $form yii\widgets\ActiveForm */
 ?>
 
 <div class="calvac-form">
@@ -68,22 +65,6 @@ use yii\helpers\Url;
             <?= $form->field($model, 'Cal_Permisos')->textInput(['maxlength' => true,'readonly'=>'readonly']) ?>
             
             <?= $form->field($model, 'Cal_Total')->textInput(['maxlength' => true,'readonly'=>'readonly']) ?>
-            
-                <?php
-            //Html::label('Días por Antiguedad');
-            //Html::textInput('dias_ley_cal', '', ['id' => 'dias_ley_cal', 'class' => 'form-control', 'readonly' => 'readonly']);
-
-            //echo $form->field($model, 'Cal_Dias')->textInput(['maxlength' => true,'readonly'=>'readonly']);
-
-            //Html::label('Saldo Anterior (Calendario)');
-            //Html::textInput('saldo_cal', '', ['id' => 'saldo_cal', 'class' => 'form-control', 'readonly' => 'readonly']);
-
-            //echo Html::label('Total Descuentos (Ver Detalle)');
-            //echo Html::textInput('num_per_cal', '', ['id' => 'num_per_cal', 'class' => 'form-control', 'readonly' => 'readonly']);
-
-
-            //echo $form->field($model, 'Cal_Total')->textInput(['maxlength' => true,'readonly'=>'readonly']);
-            ?>
 
         </div>
 

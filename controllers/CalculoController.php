@@ -283,7 +283,6 @@ class CalculoController extends Controller {
         $fechas = $this->calcularIntervalo($fecha_ingreso,$calculoAnterior);
             $fecha_fin = new \DateTime($fechas['fecha_fin']);
             $fecha_inicio = new \DateTime($fechas['fecha_inicio']);
-            $dias = $this->diasAntiguedad($fecha_ingreso->format('Y'), $fecha_fin->format('Y'));
 
             $valores['fecha_inicio'] = $fechas['fecha_inicio'];
             $valores['fecha_fin'] = $fechas['fecha_fin'];
@@ -293,8 +292,7 @@ class CalculoController extends Controller {
             $valores['vac_dias_lab'] = $diasCalendario-8;           
             
             $valores['anio'] = $fecha_inicio->format('Y');
-            $valores['dias_ley_lab'] = $dias['dias_lab'];
-            $valores['dias_ley_cal'] = $dias['dias_cal'];
+            
             $valores['num_per_cal']= 0;
             $valores['num_per_lab']= 0;
             //-- saldo anterior
@@ -310,28 +308,7 @@ class CalculoController extends Controller {
     }else {  // si es primera vez
          
         if ($fecha_ingreso > $fecha_base){
-            //$anio = $fecha_ingreso->format('Y') + 1;
-                // si inicia el 1ro de enero termina el 31 de diciembre del mismo year
-                /*if ($fecha_ingreso->format('m') == '01' and $fecha_ingreso->format('d') == '01') {
-                    $valores['fecha_inicio'] = $fecha_inicio->format('Y-m-d');
-                    $fecha_final = $fecha_ingreso->format('Y') . "-" . "12-31";
-                    $fecha_fin = new \DateTime($fecha_final);
-                    $valores['fecha_fin'] = $fecha_fin->format('Y-m-d');
-                } else { // se calcula la fecha final sumando un year
-                    *
-                     * “Un año es bisiesto si es divisible entre 4, 
-                     * excepto aquellos divisibles entre 100 pero no entre 400.”
-                     
-                    if ((($anio % 4) == 0 && $anio % 100 != 0) || $anio % 400 == 0)
-                        $diasAnuales = new \DateInterval('P365D'); // 366 bisiesto menos 1 dia
-                    else
-                        $diasAnuales = new \DateInterval('P364D'); // 365 natural menos 1 dia
-                    $fecha_fin = new \DateTime($funcionario->Fun_FechaIngreso);
-                    $fecha_fin->add($diasAnuales);
-                    $valores['fecha_inicio'] = $fecha_ingreso->format('Y-m-d');
-                    $valores['fecha_fin'] = $fecha_fin->format('Y-m-d');
-
-                }*/
+           
 
                 $fechas = $this->calcularIntervalo($fecha_ingreso,null); 
                 $fecha_fin = new \DateTime($fechas['fecha_fin']);
@@ -342,8 +319,7 @@ class CalculoController extends Controller {
                 $diasCalendario=30;
 
                 $valores['anio']= $fecha_ingreso->format('Y');
-                $valores['dias_ley_lab'] = 0;
-                $valores['dias_ley_cal'] = 0;
+                
                 //-- saldo anterior
                 $valores['vac_acu_lab'] = 0;
                 $valores['vac_acu_cal'] = 0;
@@ -360,10 +336,11 @@ class CalculoController extends Controller {
                 $valores['calculo_cal_diaslab']=$diasCalendario-8;
                 
             
-        }else {
-
         }
     }
+            // no existe dias de antiguedad
+                $valores['dias_ley_lab'] = 0;
+                $valores['dias_ley_cal'] = 0;
         /** si la fecha de ingreso sumado un periodo es igual o menor
                 * a la fecha actual permite guardar el periodo
                 * de lo contrario no permite
@@ -650,7 +627,6 @@ class CalculoController extends Controller {
     }
 
     public function actionTotal($id) {
-        //$query = ViewTotal::find();
         $saldo_cal = $this->vac_cal($id);
         $saldo_lab = $this->vac_lab($id);
         $valores['saldo_cal'] = $saldo_cal;
