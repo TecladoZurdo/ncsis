@@ -49,7 +49,7 @@ class Funcionario extends \yii\db\ActiveRecord
             [['Fun_Codigo','Fun_Cedula'],'match','pattern'=>'/^[0-9]*$/'],
             [['Fun_Nombres','Fun_Apellidos'],'match','pattern'=>'/^[A-Za-z ]*$/'],
             [['losep'],'boolean']
-            
+
         ];
     }
 
@@ -67,7 +67,7 @@ class Funcionario extends \yii\db\ActiveRecord
             'Fun_FechaIngreso' => 'Fecha de Ingreso',
             'Fun_Estado' => 'Estado',
             'Fun_VacAcumuladas' => 'Vacaciones Históricas',
-            'losep' => 'El funcionario rige bajo la LOSEP'
+            'losep' => 'El funcionario rige bajo la LOEP'
         ];
     }
 
@@ -86,11 +86,11 @@ class Funcionario extends \yii\db\ActiveRecord
     {
         return $this->hasMany(Vacaciones::className(), ['Fun_Id' => 'Fun_Id']);
     }
-    
+
     public static function getListaEstado() {
         $opciones = ['0' => ['estado_codigo' => 'activo', 'estado_nombre' => 'activo'],
             '1' => ['estado_codigo' => 'pasivo', 'estado_nombre' => 'pasivo']];
         return ArrayHelper::map($opciones, 'estado_codigo', 'estado_nombre');
     }
-    
+
 }

@@ -92,10 +92,10 @@ class CalculoController extends Controller {
             Calculo::getDb()->transaction(function($db) use ($CalculoActual,$CalculoAnterior){
                 $CalculoAnterior->activo = false;
                 $CalculoActual->save();
-            });    
+            });
             }
-            
-            
+
+
             return $this->redirect(['view', 'id' => $CalculoActual->Cal_Id]);
         } else {
             return $this->render('create', [ 'model' => $CalculoActual,]);
@@ -147,7 +147,7 @@ class CalculoController extends Controller {
 
     /**
      * Metodo  que suma los permisos y retorna un JSON
-     * total permisos calendario - tot_cal  // se considera calendario 
+     * total permisos calendario - tot_cal  // se considera calendario
      * total permisos laborales  - tot_lab  // laborales cuando esta entre lunes a viernes
      */
     public function actionPermisos() {
@@ -161,12 +161,6 @@ class CalculoController extends Controller {
                 ->where(['between', 'Per_FechaFinal', $fecha_inicio, $fecha_fin])
                 ->andFilterWhere(['Fun_Id' => $id])
                 ->scalar();
-//        $val_lab = $query->select('sum(Per_ValorCal)')->from('permisos')
-//                ->join('inner join','tipopermiso','tipopermiso.Tiper_Id=permisos.Tiper_Id and tipopermiso.descuentoVacaciones=1')
-//                ->where(['between', 'Per_FechaInicio', $fecha_inicio, $fecha_fin])
-//                ->where(['between', 'Per_FechaFinal', $fecha_inicio, $fecha_fin])
-//                ->andFilterWhere(['Fun_Id' => $id])
-//                ->scalar();
         $val_lab=$val_cal;
         if ($val_lab>7 and $val_lab<=14){
             $val_lab=$val_lab-2;
@@ -199,16 +193,68 @@ class CalculoController extends Controller {
                 }
             }
         }
-            
+
     }
-        
-        
+
+
         $valores['tot_cal'] = $val_cal !== null ? $val_cal : 0;
 
         $valores['tot_lab'] = $val_lab !== null ? $val_lab : 0;
         echo json_encode($valores);
     }
 
+    /**
+     * Metodo  que suma los permisos y retorna un JSON
+     * total permisos calendario - tot_cal  // se considera calendario
+     * total permisos laborales  - tot_lab  // laborales cuando esta entre lunes a viernes
+     */
+    public function getPermisos($funId,$fechaInicio,$fechaFin) {
+        $query = Permisos::find();
+        $val_cal = $query->select('sum(Per_ValorCal)')->from('permisos')
+                ->join('inner join','tipopermiso','tipopermiso.Tiper_Id=permisos.Tiper_Id and tipopermiso.descuentoVacaciones=1')
+                ->where(['between', 'Per_FechaInicio', $fechaInicio, $fechaFin])
+                ->where(['between', 'Per_FechaFinal', $fechaInicio, $fechaFin])
+                ->andFilterWhere(['Fun_Id' => $funId])
+                ->scalar();
+        $val_lab=$val_cal;
+        if ($val_lab>7 and $val_lab<=14){
+            $val_lab=$val_lab-2;
+    }else{
+        if ($val_lab>14 and $val_lab<=22){
+            $val_lab=$val_lab-4;
+        }else{
+            if ($val_lab>22 and $val_cal<=29){
+                $val_lab=$val_lab -6;
+            }else{
+                if($val_lab>29 and $val_lab<=37){
+                    $val_lab=$val_lab-8;
+                }else {
+                    if ($val_lab>37 and $val_lab<=44){
+                        $val_lab=$val_lab-10;
+                    }else {
+                        if($val_lab>44 and $val_lab<=52){
+                            $val_lab=$val_lab-12;
+                        }
+                        else {
+                            if($val_lab>52 and $val_lab<=59){
+                               $val_lab=$val_lab-14;
+                            }else {
+                                if ($val_lab>60){
+                                    $val_lab=$val_lab-16;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+    }
+
+        $valores['tot_cal'] = $val_cal !== null ? $val_cal : 0;
+        $valores['tot_lab'] = $val_lab !== null ? $val_lab : 0;
+        return $valores;
+    }
     public function actionListapermisos() {
         $query = ViewPermiso::find();
         $id = Yii::$app->request->post("id");
@@ -265,7 +311,7 @@ class CalculoController extends Controller {
     }
 
 /**
- * Funcion que procesa los calculos para las vacaciones 
+ * Funcion que procesa los calculos para las vacaciones
  *   periodicas
  **/
 
@@ -289,12 +335,9 @@ class CalculoController extends Controller {
 
             $diasCalendario=30;
             $valores['vac_dias_cal'] = $diasCalendario;
-            $valores['vac_dias_lab'] = $diasCalendario-8;           
-            
+            $valores['vac_dias_lab'] = $diasCalendario-8;
+
             $valores['anio'] = $fecha_inicio->format('Y');
-            
-            $valores['num_per_cal']= 0;
-            $valores['num_per_lab']= 0;
             //-- saldo anterior
             $saldoAcumuladoLaborales =$this->vac_lab($id);
             $saldoAcumuladoCalendario =$this->vac_cal($id);
@@ -304,22 +347,22 @@ class CalculoController extends Controller {
             $valores['calculo_cal_diascal']=$diasCalendario;
             $valores['calculo_cal_diaslab']=$diasCalendario-8;
 
-            
-    }else {  // si es primera vez
-         
-        if ($fecha_ingreso > $fecha_base){
-           
 
-                $fechas = $this->calcularIntervalo($fecha_ingreso,null); 
+    }else {  // si es primera vez
+
+        if ($fecha_ingreso > $fecha_base){
+
+
+                $fechas = $this->calcularIntervalo($fecha_ingreso,null);
                 $fecha_fin = new \DateTime($fechas['fecha_fin']);
-                $fecha_inicio = new \DateTime($fechas['fecha_inicio']);   
+                $fecha_inicio = new \DateTime($fechas['fecha_inicio']);
                 $valores['fecha_inicio'] = $fechas['fecha_inicio'];
                 $valores['fecha_fin'] = $fechas['fecha_fin'];
 
                 $diasCalendario=30;
 
                 $valores['anio']= $fecha_ingreso->format('Y');
-                
+
                 //-- saldo anterior
                 $valores['vac_acu_lab'] = 0;
                 $valores['vac_acu_cal'] = 0;
@@ -327,20 +370,24 @@ class CalculoController extends Controller {
                 $saldoAcumuladoCalendario =0;
                 $valores['vac_dias_cal'] = $diasCalendario;
                 $valores['vac_dias_lab'] = $diasCalendario-8;
-                $permisosCalendario =$this->vac_cal($id);
-                $permisosLaborales =$this->vac_lab($id);
-                $valores['num_per_cal']= $permisosCalendario;
-                $valores['num_per_lab']= $permisosLaborales;
                 //-- sub total
                 $valores['calculo_cal_diascal']=$diasCalendario;
                 $valores['calculo_cal_diaslab']=$diasCalendario-8;
-                
-            
+
+
         }
     }
             // no existe dias de antiguedad
                 $valores['dias_ley_lab'] = 0;
                 $valores['dias_ley_cal'] = 0;
+
+           // calculo de permisos
+           $getPermisos=$this->getPermisos($id,$fechas['fecha_inicio'],$fechas['fecha_fin']);
+           $totalPermisoCalendario =$getPermisos['tot_cal'];
+           $totalPermisosLaborales =$getPermisos['tot_lab'];
+           $valores['num_per_cal']= $totalPermisoCalendario;
+           $valores['num_per_lab']= $totalPermisosLaborales;
+
         /** si la fecha de ingreso sumado un periodo es igual o menor
                 * a la fecha actual permite guardar el periodo
                 * de lo contrario no permite
@@ -356,11 +403,11 @@ class CalculoController extends Controller {
                     $valores['guardar']=0;
                 }
 
-                $valores['calculo_cal_salcal']=$saldo+$saldoAcumuladoCalendario;
-                $valores['calculo_cal_sallab']=$saldo+$saldoAcumuladoLaborales -8;
+                $valores['calculo_cal_salcal']=$saldo+$saldoAcumuladoCalendario-$totalPermisoCalendario;
+                $valores['calculo_cal_sallab']=$saldo+$saldoAcumuladoLaborales-$totalPermisosLaborales -8;
     echo json_encode($valores);
  }
- 
+
 
     //intervalo de fechas para calculo periodico
     public function actionFechas($id) {
@@ -406,7 +453,7 @@ class CalculoController extends Controller {
                     $valores['fecha_fin'] = $fecha_fin->format('Y-m-d');
                 } else {
                     /**
-                     * “Un año es bisiesto si es divisible entre 4, 
+                     * “Un año es bisiesto si es divisible entre 4,
                      * excepto aquellos divisibles entre 100 pero no entre 400.”
                      */
                     if ((($anio % 4) == 0 && $anio % 100 != 0) || $anio % 400 == 0)
@@ -464,7 +511,7 @@ class CalculoController extends Controller {
             $fecha_fin = new \DateTime($fecha_final);
         } else {
             /**
-             * “Un año es bisiesto si es divisible entre 4, 
+             * “Un año es bisiesto si es divisible entre 4,
              * excepto aquellos divisibles entre 100 pero no entre 400.”
              */
             $anioPeriodo = $fecha_inicio->format('Y');
@@ -498,17 +545,17 @@ class CalculoController extends Controller {
      */
 
     private function calcularIntervalo($fechaIngreso,$fechaUltCalculo) {
-        
+
         if ($fechaUltCalculo==null){
-         $fecha_inicio = $fechaIngreso;   
+         $fecha_inicio = $fechaIngreso;
         }else {
         $fechaUltimoCalculo = new \DateTime($fechaUltCalculo);
         $anioultimoCalculo = $fechaUltimoCalculo->format('Y');
-        $fechainicioPeriodo = $anioultimoCalculo . "-" . $fechaIngreso->format('m') . "-" . $fechaIngreso->format("d");    
+        $fechainicioPeriodo = $anioultimoCalculo . "-" . $fechaIngreso->format('m') . "-" . $fechaIngreso->format("d");
         $fecha_inicio = new \DateTime($fechainicioPeriodo);
         }
-        
-        
+
+
 
         if ($fecha_inicio->format('m') == "01" && $fecha_inicio->format("d") == "01") {
             $anioPeriodo = $fecha_inicio->format('Y') + 1;
@@ -517,7 +564,7 @@ class CalculoController extends Controller {
             $fecha_fin = new \DateTime($fecha_final);
         } else {
             /**
-             * “Un año es bisiesto si es divisible entre 4, 
+             * “Un año es bisiesto si es divisible entre 4,
              * excepto aquellos divisibles entre 100 pero no entre 400.”
              */
             $anioPeriodo = $fecha_inicio->format('Y');
@@ -577,7 +624,7 @@ class CalculoController extends Controller {
     }
 
     private function diasAntiguedad($anio_ini, $anio_fin) {
-        
+
         $dias_cal = $anio_fin - $anio_ini - 5;
         $dias_lab = $dias_cal;
 

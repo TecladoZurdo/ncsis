@@ -20,7 +20,7 @@ $(function () {
         onClose: function (selectedDate) {
             $('#fec_fin').datepicker('option', 'minDate', selectedDate)
         }
-        
+
     });
 
 
@@ -67,11 +67,11 @@ function calcular_duracion_cal(fecha_ini, fecha_fin) {
         var dias = Math.floor(dif / (1000 * 60 * 60 * 24));
         console.log(dias);
         dias = dias + 1;
-        console.log(dias);
+        console.log('dias cal:'+dias);
         if(loep){
             var factor = parseInt($('#dias_ley_cal').val()) + 30;
         }else {
-            var factor = parseInt($('#dias_ley_cal').val()) + 15;    
+            var factor = parseInt($('#dias_ley_cal').val()) + 15;
         }
         console.log(factor);
         var vac = dias * factor / 365;
@@ -82,7 +82,7 @@ function calcular_duracion_cal(fecha_ini, fecha_fin) {
     return vac;
 }
 function calcular_duracion_lab(fecha_ini, fecha_fin) {
-    
+
     var dias = 0;
     if (fecha_fin !== '') {
         var aFecha1 = fecha_ini.split('-');
@@ -90,16 +90,16 @@ function calcular_duracion_lab(fecha_ini, fecha_fin) {
         var fFecha1 = Date.UTC(aFecha1[0], aFecha1[1] - 1, aFecha1[2]);
         var fFecha2 = Date.UTC(aFecha2[0], aFecha2[1] - 1, aFecha2[2]);
         var dif = fFecha2 - fFecha1;
-        
+
         var dias = Math.floor(dif / (1000 * 60 * 60 * 24));
         dias = dias + 1;
-        console.log(dias);
+        console.log('dias lab:'+dias);
         if(loep){
             var factor = parseInt($('#dias_ley_lab').val()) + 26;
         }else{
-            var factor = parseInt($('#dias_ley_lab').val()) + 11;    
+            var factor = parseInt($('#dias_ley_lab').val()) + 11;
         }
-        
+
         var vac = dias * factor / 365;
 
     }
@@ -168,7 +168,7 @@ function total(id) {
 function total_vac(){
     var tot_cal=parseFloat($("#dias_cal_cal").val())+parseFloat($("#saldo_cal").val()) - parseFloat($('#num_per_cal').val());
     var tot_lab=parseFloat($("#dias_cal_lab").val())+parseFloat($("#saldo_lab").val()) - parseFloat($('#num_per_lab').val());
-    
+
     $("#tot_cal").val(tot_cal.toFixed(2));
     $("#tot_lab").val(tot_lab.toFixed(2));
 }

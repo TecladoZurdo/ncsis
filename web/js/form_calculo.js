@@ -14,9 +14,9 @@ $(function () {
             if (loep){ // para los nuevos se realizar nuevos calculos
              calcularVacacionesPeriodicas(ui.item.id);
             }else {
-            intervalo(ui.item.id);    
+            intervalo(ui.item.id);
             }
-            
+
             //console.log(ui.item.id);
 
         }
@@ -32,7 +32,7 @@ $(function () {
         total_vac_lab();
         total_vac_cal();
     });
-    
+
     $('#calculo-cal_diascal').change(function(){
         var diascal=$(this).val();
         var diaslab=0;
@@ -93,6 +93,7 @@ function calcularVacacionesPeriodicas(Fun_Id){
     $('#calculo-cal_diaslab').val(obj.calculo_cal_diaslab);
     $('#calculo-cal_salcal').val(obj.calculo_cal_salcal);
     $('#calculo-cal_sallab').val(obj.calculo_cal_sallab);
+    listapermisos();
     if (obj.guardar){
         $("#div_regresar").hide();
         $("#div_guardar").show();
@@ -102,7 +103,7 @@ function calcularVacacionesPeriodicas(Fun_Id){
     }
 
 }
-    
+
 function intervalo(Fun_Id) {
     //var urlCalculo=$('#vacaciones_periodicas').attr('action');
     //console.log(urlCalculo);
@@ -141,7 +142,7 @@ function intervalo(Fun_Id) {
         $('#vac_dias_cal').val(0);
         $("#calculo-cal_salcal").val(0);
         $("#calculo-cal_sallab").val(0);
-        
+
     } else if (obj.tipo === 'no calculado') {
         $("#div_regresar").show();
         $("#div_guardar").hide();
@@ -198,7 +199,7 @@ function permisos(tipo) {
     if (obj !== ''){
         $('#num_per_cal').val(obj.tot_cal);
         $('#num_per_lab').val(obj.tot_lab);
-    }   
+    }
     else{
         $('#num_per_cal').val('0');
         $('#num_per_lab').val('0');
