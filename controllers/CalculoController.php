@@ -335,13 +335,6 @@ class CalculoController extends Controller {
             $valores['fecha_inicio'] = $fechas['fecha_inicio'];
             $valores['fecha_fin'] = $fechas['fecha_fin'];
 
-            //-- dias por ley
-            $diasCalendario=$this->diasTrancurridos($fecha_inicio,$fecha_fin);
-            $diasLaborales=$diasCalendario-8;
-            $valores['vac_dias_cal'] = $diasCalendario;
-            $valores['vac_dias_lab'] = $diasLaborales;
-
-
             //-- saldo anterior
             $saldoAcumuladoL =$this->vac_lab($id);
             $saldoAcumuladoC =$this->vac_cal($id);
@@ -361,16 +354,10 @@ class CalculoController extends Controller {
                 $valores['fecha_inicio'] = $fechas['fecha_inicio'];
                 $valores['fecha_fin'] = $fechas['fecha_fin'];
 
-                $diasCalendario=30;
-                $diasLaborales=22;
+
                 //-- saldo anterior
                 $valores['vac_acu_lab'] = $saldoAcumuladoL;
                 $valores['vac_acu_cal'] = $saldoAcumuladoC;
-
-                $valores['vac_dias_cal'] = $diasCalendario;
-                $valores['vac_dias_lab'] = $diasLaborales;
-
-
 
         }
     }
@@ -380,6 +367,12 @@ class CalculoController extends Controller {
             // no existe dias de antiguedad
                 $valores['dias_ley_lab'] = 0;
                 $valores['dias_ley_cal'] = 0;
+
+                //-- dias por ley
+                $diasCalendario=$this->diasTrancurridos($fecha_inicio,$fecha_fin);
+                $diasLaborales=$diasCalendario-8;
+                $valores['vac_dias_cal'] = $diasCalendario;
+                $valores['vac_dias_lab'] = $diasLaborales;
 
            // calculo de permisos
            $getPermisos=$this->getPermisos($id,$fechas['fecha_inicio'],$fechas['fecha_fin']);
@@ -418,7 +411,19 @@ public function diasTrancurridos($fechaInicio,$fechaFinal){
   }else {
     $intervalo = date_diff($fechaInicio,$fechaActual);
     $total = $intervalo->format('%a');
-    $dias =$total*30/365;
+    //--meses sin contar la fecha inicial
+    $meses = ( $intervalo->y * 12 ) + $intervalo->m;
+    $diaIngreso =(int)$fechaInicio->format('d');
+    $diasMesIngreso = 30-$diaIngreso+1;
+    if($fechaActual->format('d')==30){ // mes completo
+      $diasTotal = $diasMesIngreso + $meses*30;
+    }else { // restamos un mes y sumamos los dias restantes
+      $meses= $meses-1;
+      $diasMesActual = $fechaActual->format('d');
+      $diasTotal = $diasMesIngreso + $diasMesActual +$meses*30;
+    }
+
+    $dias =$diasTotal*30/360;
   }
   $dias = number_format($dias, 2, '.', ' ');
   return $dias;
