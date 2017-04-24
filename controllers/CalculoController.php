@@ -85,15 +85,15 @@ class CalculoController extends Controller {
         $CalculoActual = new Calculo();
 
         if ($CalculoActual->load(Yii::$app->request->post())) {
-            $CalculoAnterior= Calculo::findOne(['Fun_Id'=>$CalculoActual->Fun_Id,'activo'=>true]);
-            if ($CalculoAnterior === null){
-                $CalculoActual->save();
-            }else{
-            Calculo::getDb()->transaction(function($db) use ($CalculoActual,$CalculoAnterior){
-                $CalculoAnterior->activo = false;
-                $CalculoActual->save();
-            });
-            }
+          //  $CalculoAnterior= Calculo::findOne(['Fun_Id'=>$CalculoActual->Fun_Id,'activo'=>true]);
+            // if ($CalculoAnterior === null){
+                 $CalculoActual->save();
+            // }else{
+            // Calculo::getDb()->transaction(function($db) use ($CalculoActual,$CalculoAnterior){
+            //     $CalculoAnterior->activo = false;
+            //     $CalculoActual->save();
+            // });
+            // }
 
 
             return $this->redirect(['view', 'id' => $CalculoActual->Cal_Id]);
@@ -321,6 +321,8 @@ class CalculoController extends Controller {
     $fecha_base = new \DateTime('2015-01-01');
     $fecha_actual = new \DateTime(date('Y-m-d'));
     $fecha_ingreso = new \DateTime($funcionario->Fun_FechaIngreso);
+    $saldoAcumuladoLaborales =0;
+    $saldoAcumuladoCalendario =0;
     // da el ultimo calculo realizado
     $calculoAnterior = $query->select('Cal_FechaFin')->from('calculo')->where(['Fun_Id' => $id,'activo'=>true])->orderBy('Cal_FechaFin DESC')->scalar();
     if ($calculoAnterior != null ){ //si ya tiene un calculo anterior
@@ -334,18 +336,17 @@ class CalculoController extends Controller {
             $valores['fecha_fin'] = $fechas['fecha_fin'];
 
             $diasCalendario=30;
+            //-- dias por ley
             $valores['vac_dias_cal'] = $diasCalendario;
             $valores['vac_dias_lab'] = $diasCalendario-8;
 
-            $valores['anio'] = $fecha_inicio->format('Y');
+
             //-- saldo anterior
             $saldoAcumuladoLaborales =$this->vac_lab($id);
             $saldoAcumuladoCalendario =$this->vac_cal($id);
             $valores['vac_acu_cal'] = $saldoAcumuladoCalendario;
             $valores['vac_acu_lab'] = $saldoAcumuladoLaborales;
-            //--- sub total
-            $valores['calculo_cal_diascal']=$diasCalendario;
-            $valores['calculo_cal_diaslab']=$diasCalendario-8;
+
 
 
     }else {  // si es primera vez
@@ -361,22 +362,20 @@ class CalculoController extends Controller {
 
                 $diasCalendario=30;
 
-                $valores['anio']= $fecha_ingreso->format('Y');
-
                 //-- saldo anterior
                 $valores['vac_acu_lab'] = 0;
                 $valores['vac_acu_cal'] = 0;
-                $saldoAcumuladoLaborales = 0;
-                $saldoAcumuladoCalendario =0;
+
                 $valores['vac_dias_cal'] = $diasCalendario;
                 $valores['vac_dias_lab'] = $diasCalendario-8;
-                //-- sub total
-                $valores['calculo_cal_diascal']=$diasCalendario;
-                $valores['calculo_cal_diaslab']=$diasCalendario-8;
+
 
 
         }
     }
+    //anio
+    $valores['anio'] = $fecha_inicio->format('Y');
+
             // no existe dias de antiguedad
                 $valores['dias_ley_lab'] = 0;
                 $valores['dias_ley_cal'] = 0;
@@ -387,6 +386,10 @@ class CalculoController extends Controller {
            $totalPermisosLaborales =$getPermisos['tot_lab'];
            $valores['num_per_cal']= $totalPermisoCalendario;
            $valores['num_per_lab']= $totalPermisosLaborales;
+
+           //-- sub total
+           $valores['calculo_cal_diascal']=$diasCalendario -$totalPermisoCalendario;
+           $valores['calculo_cal_diaslab']=$diasCalendario-$totalPermisosLaborales -8;
 
         /** si la fecha de ingreso sumado un periodo es igual o menor
                 * a la fecha actual permite guardar el periodo
@@ -443,28 +446,12 @@ class CalculoController extends Controller {
         } else {// si no tiene calculo anterior empieza en 2015
             $fecha_inicio = new \DateTime($funcionario->Fun_FechaIngreso);
 
-            if ($fecha_inicio > $fecha_base) {
-                $anio = $fecha_inicio->format('Y') + 1;
+             if ($fecha_inicio > $fecha_base) {
 
-                if ($fecha_inicio->format('m') == '01' and $fecha_inicio->format('d') == '01') {
-                    $valores['fecha_inicio'] = $fecha_inicio->format('Y-m-d');
-                    $fecha_final = $fecha_inicio->format('Y') . "-" . "12-31";
-                    $fecha_fin = new \DateTime($fecha_final);
-                    $valores['fecha_fin'] = $fecha_fin->format('Y-m-d');
-                } else {
-                    /**
-                     * “Un año es bisiesto si es divisible entre 4,
-                     * excepto aquellos divisibles entre 100 pero no entre 400.”
-                     */
-                    if ((($anio % 4) == 0 && $anio % 100 != 0) || $anio % 400 == 0)
-                        $intervalo = new \DateInterval('P365D'); // 366 bisiesto menos 1 dia
-                    else
-                        $intervalo = new \DateInterval('P364D'); // 365 natural menos 1 dia
-                    $fecha_fin = new \DateTime($funcionario->Fun_FechaIngreso);
-                    $fecha_fin->add($intervalo);
-                    $valores['fecha_inicio'] = $fecha_inicio->format('Y-m-d');
-                }
-
+            $fechas = $this->calcularIntervalo($fecha_origen,NULL);
+            $fecha_inicio = new \DateTime($fechas['fecha_inicio']);
+            $fecha_fin = new \DateTime($fechas['fecha_fin']);
+            $valores['fecha_inicio'] = $fechas['fecha_inicio'];
                 if ($fecha_fin < $fecha_actual) {
                     $valores['fecha_fin'] = $fecha_fin->format('Y-m-d');
                     $valores['anio'] = $fecha_fin->format('Y');
