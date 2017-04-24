@@ -57,16 +57,6 @@ $(function () {
         $('#calculo-cal_diaslab').val(diaslab)
     });
 
-    /*
-     $(".both").mayusculassintildes({
-     allownumbers: true
-     });
-     $(".text").mayusculassintildes({
-     });
-     $(".number").mayusculassintildes({
-     onlynumbers: true
-     });
-     */
 });
 
 function calcularVacacionesPeriodicas(Fun_Id){

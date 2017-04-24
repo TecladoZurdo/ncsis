@@ -321,8 +321,8 @@ class CalculoController extends Controller {
     $fecha_base = new \DateTime('2015-01-01');
     $fecha_actual = new \DateTime(date('Y-m-d'));
     $fecha_ingreso = new \DateTime($funcionario->Fun_FechaIngreso);
-    $saldoAcumuladoLaborales =0;
-    $saldoAcumuladoCalendario =0;
+    $saldoAcumuladoL =0;
+    $saldoAcumuladoC =0;
     // da el ultimo calculo realizado
     $calculoAnterior = $query->select('Cal_FechaFin')->from('calculo')->where(['Fun_Id' => $id,'activo'=>true])->orderBy('Cal_FechaFin DESC')->scalar();
     if ($calculoAnterior != null ){ //si ya tiene un calculo anterior
@@ -335,17 +335,18 @@ class CalculoController extends Controller {
             $valores['fecha_inicio'] = $fechas['fecha_inicio'];
             $valores['fecha_fin'] = $fechas['fecha_fin'];
 
-            $diasCalendario=30;
             //-- dias por ley
+            $diasCalendario=$this->diasTrancurridos($fecha_inicio,$fecha_fin);
+            $diasLaborales=$diasCalendario-8;
             $valores['vac_dias_cal'] = $diasCalendario;
-            $valores['vac_dias_lab'] = $diasCalendario-8;
+            $valores['vac_dias_lab'] = $diasLaborales;
 
 
             //-- saldo anterior
-            $saldoAcumuladoLaborales =$this->vac_lab($id);
-            $saldoAcumuladoCalendario =$this->vac_cal($id);
-            $valores['vac_acu_cal'] = $saldoAcumuladoCalendario;
-            $valores['vac_acu_lab'] = $saldoAcumuladoLaborales;
+            $saldoAcumuladoL =$this->vac_lab($id);
+            $saldoAcumuladoC =$this->vac_cal($id);
+            $valores['vac_acu_cal'] = $saldoAcumuladoC;
+            $valores['vac_acu_lab'] = $saldoAcumuladoL;
 
 
 
@@ -361,13 +362,13 @@ class CalculoController extends Controller {
                 $valores['fecha_fin'] = $fechas['fecha_fin'];
 
                 $diasCalendario=30;
-
+                $diasLaborales=22;
                 //-- saldo anterior
-                $valores['vac_acu_lab'] = 0;
-                $valores['vac_acu_cal'] = 0;
+                $valores['vac_acu_lab'] = $saldoAcumuladoL;
+                $valores['vac_acu_cal'] = $saldoAcumuladoC;
 
                 $valores['vac_dias_cal'] = $diasCalendario;
-                $valores['vac_dias_lab'] = $diasCalendario-8;
+                $valores['vac_dias_lab'] = $diasLaborales;
 
 
 
@@ -388,29 +389,40 @@ class CalculoController extends Controller {
            $valores['num_per_lab']= $totalPermisosLaborales;
 
            //-- sub total
-           $valores['calculo_cal_diascal']=$diasCalendario -$totalPermisoCalendario;
-           $valores['calculo_cal_diaslab']=$diasCalendario-$totalPermisosLaborales -8;
+           $valores['calculo_cal_diascal']=$diasCalendario - $totalPermisoCalendario;
+           $valores['calculo_cal_diaslab']=$diasLaborales - $totalPermisosLaborales;
+           $subTotalC =$valores['calculo_cal_diascal'];
+           $subTotalL =$valores['calculo_cal_diaslab'];
 
         /** si la fecha de ingreso sumado un periodo es igual o menor
                 * a la fecha actual permite guardar el periodo
                 * de lo contrario no permite
                 */
                 if ($fecha_fin <= $fecha_actual){
-                    $dias=365;
-                    $saldo = floor($dias*30 / 365);
                     $valores['guardar']=1;
                 }else {
-                    $intervalo = date_diff($fecha_ingreso,$fecha_actual);
-                    $dias = $intervalo->format('%a');
-                    $saldo = floor($dias*30 / 365);
                     $valores['guardar']=0;
                 }
 
-                $valores['calculo_cal_salcal']=$saldo+$saldoAcumuladoCalendario-$totalPermisoCalendario;
-                $valores['calculo_cal_sallab']=$saldo+$saldoAcumuladoLaborales-$totalPermisosLaborales -8;
+                $valores['calculo_cal_salcal']=$subTotalC+$saldoAcumuladoC;
+                $valores['calculo_cal_sallab']=$subTotalL+$saldoAcumuladoL;
     echo json_encode($valores);
  }
 
+public function diasTrancurridos($fechaInicio,$fechaFinal){
+  $fechaActual =  new \DateTime(date('Y-m-d'));
+  if($fechaFinal<$fechaActual){
+    $intervalo = date_diff($fechaInicio,$fechaFinal);
+    $total = $intervalo->format('%a');
+    $dias =$total*30/365;
+  }else {
+    $intervalo = date_diff($fechaInicio,$fechaActual);
+    $total = $intervalo->format('%a');
+    $dias =$total*30/365;
+  }
+  $dias = number_format($dias, 2, '.', ' ');
+  return $dias;
+}
 
     //intervalo de fechas para calculo periodico
     public function actionFechas($id) {
