@@ -341,8 +341,6 @@ class CalculoController extends Controller {
             $valores['vac_acu_cal'] = $saldoAcumuladoC;
             $valores['vac_acu_lab'] = $saldoAcumuladoL;
 
-
-
     }else {  // si es primera vez
 
         if ($fecha_ingreso > $fecha_base){
@@ -370,7 +368,8 @@ class CalculoController extends Controller {
 
                 //-- dias por ley
                 $diasCalendario=$this->diasTrancurridos($fecha_inicio,$fecha_fin);
-                $diasLaborales=$diasCalendario-8;
+                $diasLaborales=(22*$diasCalendario)/30;
+                $diasLaborales =number_format($diasLaborales, 2, '.', ' ');
                 $valores['vac_dias_cal'] = $diasCalendario;
                 $valores['vac_dias_lab'] = $diasLaborales;
 
