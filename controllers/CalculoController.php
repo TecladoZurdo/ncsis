@@ -405,9 +405,11 @@ class CalculoController extends Controller {
 public function diasTrancurridos($fechaInicio,$fechaFinal){
   $fechaActual =  new \DateTime(date('Y-m-d'));
   if($fechaFinal<$fechaActual){
-    $intervalo = date_diff($fechaInicio,$fechaFinal);
-    $total = $intervalo->format('%a');
-    $dias =$total*30/365;
+    //$intervalo = date_diff($fechaInicio,$fechaFinal);
+    //$total = $intervalo->format('%a');
+    //$dias =$total*30/365;
+    //-- por defecto se inicia a 30
+    $dias=30;
   }else {
     $intervalo = date_diff($fechaInicio,$fechaActual);
     $total = $intervalo->format('%a');
@@ -495,55 +497,6 @@ public function diasTrancurridos($fechaInicio,$fechaFinal){
         //var_dump($diferencia);
     }
 
-    /*
-     * Calculo de intervalo cuando ya tuvo un calculo anterior
-     */
-
-    private function calcularIntervaloOLD($fun_id, $fechaIngreso) {
-        $query = Calculo::find();
-        $fecha = $query->select('Cal_FechaFin')->from('calculo')->where(['Fun_Id' => $fun_id])->orderBy('Cal_FechaFin DESC')->scalar();
-        $fechaUltimoCalculo = new \DateTime($fecha);
-        $anioultimoCalculo = $fechaUltimoCalculo->format('Y');
-
-        $fechainicioPeriodo = $anioultimoCalculo . "-" . $fechaIngreso->format('m') . "-" . $fechaIngreso->format("d");
-        $fecha_inicio = new \DateTime($fechainicioPeriodo);
-
-        if ($fecha_inicio->format('m') == "01" && $fecha_inicio->format("d") == "01") {
-            $anioPeriodo = $fecha_inicio->format('Y') + 1;
-            $fecha_inicio->setDate($anioPeriodo, "01", "01");
-            $fecha_final = $anioPeriodo . "-12-31";
-            $fecha_fin = new \DateTime($fecha_final);
-        } else {
-            /**
-             * “Un año es bisiesto si es divisible entre 4,
-             * excepto aquellos divisibles entre 100 pero no entre 400.”
-             */
-            $anioPeriodo = $fecha_inicio->format('Y');
-            $mesInicio = $fecha_inicio->format('m');
-            if ($mesInicio >= 3) {
-                $anioPeriodo = $fecha_inicio->format('Y') + 1;
-                if ((($anioPeriodo % 4) == 0 && $anioPeriodo % 100 != 0) || $anioPeriodo % 400 == 0) {
-                    $intervalo = new \DateInterval('P365D'); // menos un dia
-                } else {
-                    $intervalo = new \DateInterval('P364D'); // menos un dia
-                }
-            } else {
-                if ((($anioPeriodo % 4) == 0 && $anioPeriodo % 100 != 0) || $anioPeriodo % 400 == 0) {
-                    $intervalo = new \DateInterval('P365D'); // menos un dia
-                } else {
-                    $intervalo = new \DateInterval('P364D'); // menos un dia
-                }
-            }
-
-            $fecha_fin = new \DateTime($fecha_inicio->format('Y-m-d'));
-            $fecha_fin->add($intervalo);
-        }
-        $fechas['fecha_inicio'] = $fecha_inicio->format('Y-m-d');
-        $fechas['fecha_fin'] = $fecha_fin->format('Y-m-d');
-        return $fechas;
-    }
-
-
      /*
      * Calculo de intervalo cuando ya tuvo un calculo anterior
      */
@@ -571,22 +524,7 @@ public function diasTrancurridos($fechaInicio,$fechaFinal){
              * “Un año es bisiesto si es divisible entre 4,
              * excepto aquellos divisibles entre 100 pero no entre 400.”
              */
-            $anioPeriodo = $fecha_inicio->format('Y');
-            $mesInicio = $fecha_inicio->format('m');
-            if ($mesInicio >= 3) {
-                $anioPeriodo = $fecha_inicio->format('Y') + 1;
-                if ((($anioPeriodo % 4) == 0 && $anioPeriodo % 100 != 0) || $anioPeriodo % 400 == 0) {
-                    $intervalo = new \DateInterval('P365D'); // menos un dia
-                } else {
-                    $intervalo = new \DateInterval('P364D'); // menos un dia
-                }
-            } else {
-                if ((($anioPeriodo % 4) == 0 && $anioPeriodo % 100 != 0) || $anioPeriodo % 400 == 0) {
-                    $intervalo = new \DateInterval('P365D'); // menos un dia
-                } else {
-                    $intervalo = new \DateInterval('P364D'); // menos un dia
-                }
-            }
+             $intervalo = $this->getIntervalo($fecha_inicio);
 
             $fecha_fin = new \DateTime($fecha_inicio->format('Y-m-d'));
             $fecha_fin->add($intervalo);
@@ -596,6 +534,25 @@ public function diasTrancurridos($fechaInicio,$fechaFinal){
         return $fechas;
     }
 
+    public function getIntervalo($fecha_inicio){
+      $anioPeriodo = $fecha_inicio->format('Y');
+      $mesInicio = $fecha_inicio->format('m');
+      if ($mesInicio >= 3) {
+          $anioPeriodo = $fecha_inicio->format('Y') + 1;
+          if ((($anioPeriodo % 4) == 0 && $anioPeriodo % 100 != 0) || $anioPeriodo % 400 == 0) {
+              $intervalo = new \DateInterval('P365D'); // menos un dia
+          } else {
+              $intervalo = new \DateInterval('P364D'); // menos un dia
+          }
+      } else {
+          if ((($anioPeriodo % 4) == 0 && $anioPeriodo % 100 != 0) || $anioPeriodo % 400 == 0) {
+              $intervalo = new \DateInterval('P365D'); // menos un dia
+          } else {
+              $intervalo = new \DateInterval('P364D'); // menos un dia
+          }
+      }
+      return $intervalo;
+    }
 
     private function calculoHistorico($fecha_inicio, $parametro = null) {
         if ($fecha_inicio->format('m') == '01' and $fecha_inicio->format('d') == '01') {
