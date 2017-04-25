@@ -69,10 +69,24 @@ function calcular_duracion_cal(fecha_ini, fecha_fin) {
             console.log('dIngreso:'+diasMesIngreso);
             var dif = Date.UTC(aFecha2[0],aFecha2[1]-1,30) - Date.UTC(aFecha1[0],aFecha1[1]-1,30);
             if(aFecha2[2]==30){
-                meses = aFecha2[1]-aFecha1[1];
+                year = aFecha2[0] - aFecha1[0];
+                console.log('yearCSI30:'+year);
+                if (year==0){
+                    meses = aFecha2[1]-aFecha1[1];
+                }else{
+                  mesesAnterior = 12-aFecha2[1];
+                  meses = parseInt(mesesAnterior) + parseInt(aFecha1[1])-1;
+                }
                 dias = diasMesIngreso+meses*30;
             }else{
-              meses = aFecha2[1]-aFecha1[1] -1;
+              year = aFecha2[0] - aFecha1[0];
+              console.log('yearNOL30:'+year);
+              if (year==0){
+                  meses = aFecha2[1]-aFecha1[1] -1;
+              }else{
+                mesesAnterior = 12-aFecha1[1];
+                meses = parseInt(mesesAnterior) + parseInt(aFecha2[1])-1;
+              }
               console.log('meses:'+meses);
               diasMesActual = aFecha2[2];
               console.log('dmesA:'+diasMesActual);
@@ -116,15 +130,23 @@ function calcular_duracion_lab(fecha_ini, fecha_fin) {
           console.log('dIngreso:'+diasMesIngreso);
           if(aFecha2[2]==30){
               year = aFecha2[0] - aFecha1[0];
+              console.log('yearLSI30:'+year);
               if (year==0){
                   meses = aFecha2[1]-aFecha1[1];
               }else{
                 mesesAnterior = 12-aFecha2[1];
-                meses = mesesAnterior + aFecha[1];
+                meses = parseInt(mesesAnterior) + parseInt(aFecha1[1]) -1;
               }
-              dias = diasMesIngreso+meses*30;
+              dias = parseInt(diasMesIngreso)+parseInt(meses*30);
           }else{
-            meses = aFecha2[1]-aFecha1[1] -1;
+            year = aFecha2[0] - aFecha1[0];
+            console.log('yearNOL30:'+year);
+            if (year==0){
+                meses = aFecha2[1]-aFecha1[1] -1;
+            }else{
+              mesesAnterior = 12-aFecha1[1];
+              meses = parseInt(mesesAnterior) + parseInt(aFecha2[1] -1);
+            }
             console.log('meses:'+meses);
             diasMesActual = aFecha2[2];
             console.log('dmesA:'+diasMesActual);
