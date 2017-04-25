@@ -7,7 +7,7 @@ use Yii;
  */
 /**
  * clase para la vista "viewCalculoVacaciones
- * 
+ *
  * @property string $Fun_Apellidos  apellido del trabajador
  * @property string $Fun_Nombres  nombre del trabajador
  * @property date $iniperiodo fecha de ingreso al trabajo pero con el anio correcto
@@ -21,7 +21,7 @@ class ViewCalculoVacaciones extends \yii\db\ActiveRecord{
     public static function tableName() {
         return 'viewcalculovacaciones';
     }
-    
+
     /**
      * @inheritdoc
      */
@@ -29,10 +29,11 @@ class ViewCalculoVacaciones extends \yii\db\ActiveRecord{
     return [
         [['Fun_Apellidos','Fun_Nombres'],'string','max'=>400],
         [['iniperiodo','finperiodo','fechaactual'],'date','format'=>'yy-m-d'],
+        ['loep'],
         [['antiguedad','descuentos','descuentoslaborables','saldoanterior','saldoanteriorLab','total','diasdevengados'],'integer']
     ];
     }
-    
+
     /**
      * @inheritdoc
      */
@@ -44,6 +45,7 @@ class ViewCalculoVacaciones extends \yii\db\ActiveRecord{
             'fechaactual'=>'Fecha Actual',
            'finperiodo'=>'Fin de Período',
             'antiguedad'=>'Antiguedad',
+            'loep'=>'LOEP',
              'diasdevengados'=>'Días Proporcionales 2017',
              'saldoanterior'=>'Saldo Anterior',
             'descuentos'=>'Permisos Otorgados',

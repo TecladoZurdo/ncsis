@@ -33,12 +33,13 @@ $this->params['breadcrumbs'][] = $this->title;
             'fechaactual',
             'iniperiodo',
             'finperiodo',
+            'loep',
             'antiguedad',
             'diasdevengados',
             'saldoanterior',
             'descuentos',
             #'descuentoslaborables',
-            
+
             #'saldoanteriorLab',
             'total'
         ],
@@ -50,11 +51,11 @@ $this->params['breadcrumbs'][] = $this->title;
         ]
     ]);
     ?>
-    
+
 <style type="text/css">
 body{
 	background:khaki;
-   
+
 }
 </style>
 </div>

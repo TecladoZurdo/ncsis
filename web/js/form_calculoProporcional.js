@@ -114,9 +114,14 @@ function calcular_duracion_lab(fecha_ini, fecha_fin) {
         if(loep){
           var diasMesIngreso = 30- aFecha1[2]+1;
           console.log('dIngreso:'+diasMesIngreso);
-          var dif = Date.UTC(aFecha2[0],aFecha2[1]-1,30) - Date.UTC(aFecha1[0],aFecha1[1]-1,30);
           if(aFecha2[2]==30){
-              meses = aFecha2[1]-aFecha1[1];
+              year = aFecha2[0] - aFecha1[0];
+              if (year==0){
+                  meses = aFecha2[1]-aFecha1[1];
+              }else{
+                mesesAnterior = 12-aFecha2[1];
+                meses = mesesAnterior + aFecha[1];
+              }
               dias = diasMesIngreso+meses*30;
           }else{
             meses = aFecha2[1]-aFecha1[1] -1;
