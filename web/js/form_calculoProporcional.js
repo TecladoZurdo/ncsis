@@ -63,23 +63,40 @@ function calcular_duracion_cal(fecha_ini, fecha_fin) {
         var aFecha2 = fecha_fin.split('-');
         var fFecha1 = Date.UTC(aFecha1[0], aFecha1[1] - 1, aFecha1[2]);
         var fFecha2 = Date.UTC(aFecha2[0], aFecha2[1] - 1, aFecha2[2]);
-        var dif = fFecha2 - fFecha1;
-        var dias = Math.floor(dif / (1000 * 60 * 60 * 24));
-        console.log(dias);
-        dias = dias + 1;
-        console.log('dias cal:'+dias);
+
         if(loep){
+            var diasMesIngreso = 30- aFecha1[2]+1;
+            console.log('dIngreso:'+diasMesIngreso);
+            var dif = Date.UTC(aFecha2[0],aFecha2[1]-1,30) - Date.UTC(aFecha1[0],aFecha1[1]-1,30);
+            if(aFecha2[2]==30){
+                meses = aFecha2[1]-aFecha1[1];
+                dias = diasMesIngreso+meses*30;
+            }else{
+              meses = aFecha2[1]-aFecha1[1] -1;
+              console.log('meses:'+meses);
+              diasMesActual = aFecha2[2];
+              console.log('dmesA:'+diasMesActual);
+              dias = parseInt(diasMesIngreso)+parseInt(diasMesActual)+parseInt(meses*30);
+            }
+            console.log('diasTotal:'+dias);
             var factor = parseInt($('#dias_ley_cal').val()) + 30;
+            var vac = dias * factor / 360;
         }else {
-            var factor = parseInt($('#dias_ley_cal').val()) + 15;
+          var dif = fFecha2 - fFecha1;
+          var dias = Math.floor(dif / (1000 * 60 * 60 * 24));
+          console.log(dias);
+          dias = dias + 1;
+          console.log('dias cal:'+dias);
+          var factor = parseInt($('#dias_ley_cal').val()) + 15;
+          console.log(factor);
+          var vac = dias * factor / 365;
         }
-        console.log(factor);
-        var vac = dias * factor / 365;
+
 
     }
 
 
-    return vac;
+    return vac.toFixed(2);
 }
 function calcular_duracion_lab(fecha_ini, fecha_fin) {
 
@@ -95,7 +112,22 @@ function calcular_duracion_lab(fecha_ini, fecha_fin) {
         dias = dias + 1;
         console.log('dias lab:'+dias);
         if(loep){
-            var factor = parseInt($('#dias_ley_lab').val()) + 26;
+          var diasMesIngreso = 30- aFecha1[2]+1;
+          console.log('dIngreso:'+diasMesIngreso);
+          var dif = Date.UTC(aFecha2[0],aFecha2[1]-1,30) - Date.UTC(aFecha1[0],aFecha1[1]-1,30);
+          if(aFecha2[2]==30){
+              meses = aFecha2[1]-aFecha1[1];
+              dias = diasMesIngreso+meses*30;
+          }else{
+            meses = aFecha2[1]-aFecha1[1] -1;
+            console.log('meses:'+meses);
+            diasMesActual = aFecha2[2];
+            console.log('dmesA:'+diasMesActual);
+            dias = parseInt(diasMesIngreso)+parseInt(diasMesActual)+parseInt(meses*30);
+          }
+          console.log('diasTotal:'+dias);
+          var factor = parseInt($('#dias_ley_cal').val()) + 22;
+          var vac = dias * factor / 360;
         }else{
             var factor = parseInt($('#dias_ley_lab').val()) + 11;
         }
@@ -105,7 +137,7 @@ function calcular_duracion_lab(fecha_ini, fecha_fin) {
     }
 
 
-    return vac;
+    return vac.toFixed(2);
 }
 function diasley(Fun_Id, fecha) {
     var jsonData = $.ajax({
