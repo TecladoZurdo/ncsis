@@ -405,15 +405,30 @@ SELECT
          ELSE 'NO'
 		END
         ) AS loep,
+        
+        ( CASE 
+        WHEN LOSEP = 0 THEN
         (CASE
-            WHEN
+		    WHEN
                 ((TO_DAYS(NOW()) - TO_DAYS((DATE_FORMAT(`fun`.`Fun_FechaIngreso`, '2015-%m-%d') - INTERVAL 1 DAY))) >= 366)
             THEN
                 ROUND((((TO_DAYS(NOW()) - TO_DAYS((DATE_FORMAT(`fun`.`Fun_FechaIngreso`, '2016-%m-%d') - INTERVAL 1 DAY))) * 15) / 365),
                         2)
             ELSE ROUND((((TO_DAYS(NOW()) - TO_DAYS((DATE_FORMAT(`fun`.`Fun_FechaIngreso`, '2015-%m-%d') - INTERVAL 1 DAY))) * 15) / 365),
                     2)
-        END) AS `diasdevengados`,
+        END) 
+        ELSE (CASE
+		    WHEN
+                ((TO_DAYS(NOW()) - TO_DAYS((DATE_FORMAT(`fun`.`Fun_FechaIngreso`, '2015-%m-%d') - INTERVAL 1 DAY))) >= 366)
+            THEN
+                ROUND((((TO_DAYS(NOW()) - TO_DAYS((DATE_FORMAT(`fun`.`Fun_FechaIngreso`, '2016-%m-%d') - INTERVAL 1 DAY))) * 30) / 365),
+                        2)
+            ELSE ROUND((((TO_DAYS(NOW()) - TO_DAYS((DATE_FORMAT(`fun`.`Fun_FechaIngreso`, '2015-%m-%d') - INTERVAL 1 DAY))) * 30) / 365),
+                    2)
+        END
+        )
+        END
+        ) AS `diasdevengados`,
         (CASE
             WHEN
                 ((SELECT 
