@@ -1,17 +1,80 @@
-drop view viewcalculovacaciones;
-create view viewcalculovacaciones as
+#drop view viewcalculovacaciones;
+#create view viewcalculovacaciones as
 SELECT 
         `fun`.`Fun_Apellidos` AS `Fun_Apellidos`,
         `fun`.`Fun_Nombres` AS `Fun_Nombres`,
+        `fun`.`Fun_FechaIngreso`,
         (CASE
-            WHEN ((TO_DAYS(NOW()) - TO_DAYS((DATE_FORMAT(`fun`.`Fun_FechaIngreso`, '2015-%m-%d') - INTERVAL 1 DAY))) >= 366) THEN DATE_FORMAT(`fun`.`Fun_FechaIngreso`, '2016-%m-%d')
-            ELSE DATE_FORMAT(`fun`.`Fun_FechaIngreso`, '2015-%m-%d')
-        END) AS `iniperiodo`,
+			WHEN  #menor de un year ACTUAL
+            to_days(now())-to_days(date_format(`fun`.`Fun_FechaIngreso`,'%Y-%m-%d'))>=0 
+            and
+            to_days(now())-to_days(date_format(`fun`.`Fun_FechaIngreso`,'%Y-%m-%d') - interval 1 DAY)<365 
+            and 
+            date_format(`fun`.`Fun_FechaIngreso`,'%Y') = date_format(now(),'%Y') 
+            THEN 
+            date_format(`fun`.`Fun_FechaIngreso`,concat(date_format(now(),'%Y'),'-%m-%d'))
+            WHEN #
+            to_days(now())-to_days(date_format(`fun`.`Fun_FechaIngreso`,'%Y-%m-%d'))>=0
+            and
+            to_days(now())-to_days(date_format(`fun`.`Fun_FechaIngreso`,'%Y-%m-%d') - interval 1 DAY)<365 
+            and
+            date_format(`fun`.`Fun_FechaIngreso`,'%Y') <> date_format(now(),'%Y') 
+            THEN 
+            `fun`.`Fun_FechaIngreso`
+            WHEN # fecha formateada UN YEAR ACTUAL
+            to_days(date_format(`fun`.`Fun_FechaIngreso`,concat(date_format(now(),'%Y'),'-%m-%d')))-to_days(now())<0
+            and 
+            date_format(`fun`.`Fun_FechaIngreso`,'%Y') <> date_format(now(),'%Y') 
+            THEN 
+            date_format(`fun`.`Fun_FechaIngreso`,concat(date_format(now(),'%Y'),'-%m-%d'))            
+            WHEN # fecha formateada contenido 
+            to_days(date_format(`fun`.`Fun_FechaIngreso`,concat(date_format(now(),'%Y'),'-%m-%d')))-to_days(now())>1
+            and 
+            date_format(`fun`.`Fun_FechaIngreso`,'%Y') < date_format(now(),'%Y') 
+            THEN 
+            date_format(`fun`.`Fun_FechaIngreso`,concat(date_format(now(),'%Y')-1,'-%m-%d'))
+            
+        END) 
+        AS `iniperiodo`,
+
         (CASE
-            WHEN ((TO_DAYS(NOW()) - TO_DAYS((DATE_FORMAT(`fun`.`Fun_FechaIngreso`, '2015-%m-%d') - INTERVAL 1 DAY))) >= 366) THEN (DATE_FORMAT(`fun`.`Fun_FechaIngreso`, '2017-%m-%d') - INTERVAL 1 DAY)
-            ELSE (DATE_FORMAT(`fun`.`Fun_FechaIngreso`, '2016-%m-%d') - INTERVAL 1 DAY)
-        END) AS `finperiodo`,
+			WHEN  #menor de un year ACTUAL
+            to_days(now())-to_days(date_format(`fun`.`Fun_FechaIngreso`,'%Y-%m-%d'))>=0 
+            and
+            to_days(now())-to_days(date_format(`fun`.`Fun_FechaIngreso`,'%Y-%m-%d') - interval 1 DAY)<365 
+            and 
+            date_format(`fun`.`Fun_FechaIngreso`,'%Y') = date_format(now(),'%Y') 
+            THEN 
+            date_format(`fun`.`Fun_FechaIngreso`,concat(date_format(now(),'%Y'),'-%m-%d'))
+            WHEN #
+            to_days(now())-to_days(date_format(`fun`.`Fun_FechaIngreso`,'%Y-%m-%d'))>=0
+            and
+            to_days(now())-to_days(date_format(`fun`.`Fun_FechaIngreso`,'%Y-%m-%d') - interval 1 DAY)<365 
+            and
+            date_format(`fun`.`Fun_FechaIngreso`,'%Y') <> date_format(now(),'%Y') 
+            THEN 
+            `fun`.`Fun_FechaIngreso`
+            WHEN # fecha formateada UN YEAR ACTUAL
+            to_days(date_format(`fun`.`Fun_FechaIngreso`,concat(date_format(now(),'%Y'),'-%m-%d')))-to_days(now())<0
+            and 
+            date_format(`fun`.`Fun_FechaIngreso`,'%Y') <> date_format(now(),'%Y') 
+            THEN 
+            date_format(`fun`.`Fun_FechaIngreso`,concat(date_format(now(),'%Y'),'-%m-%d'))            
+            WHEN # fecha formateada contenido 
+            to_days(date_format(`fun`.`Fun_FechaIngreso`,concat(date_format(now(),'%Y'),'-%m-%d')))-to_days(now())>1
+            and 
+            date_format(`fun`.`Fun_FechaIngreso`,'%Y') < date_format(now(),'%Y') 
+            THEN 
+            date_format(`fun`.`Fun_FechaIngreso`,concat(date_format(now(),'%Y')-1,'-%m-%d'))
+            
+        END)+ interval 1 year - interval 1 day
+        
+        AS `finperiodo`,
+        
         DATE_FORMAT(NOW(), '%Y-%m-%d') AS `fechaactual`,
+        (CASE WHEN losep=1
+         then 0
+         else 
         (CASE
             WHEN
                 (TIMESTAMPDIFF(YEAR,
@@ -112,7 +175,9 @@ SELECT
             THEN
                 14
             ELSE 0
-        END) AS `antiguedad`,
+        END) 
+        end)
+        AS `antiguedad`,
         (CASE
             WHEN
                 ISNULL((SELECT 
@@ -405,7 +470,7 @@ SELECT
          ELSE 'NO'
 		END
         ) AS loep,
-        
+        # DIAS DEVENGADOS SON LOS DIAS QUE DESDE QUE INICIO TIENE A FAVOR PARA USAR EN VACACIONES
         ( CASE 
         WHEN LOSEP = 0 THEN
         (CASE
@@ -417,14 +482,28 @@ SELECT
             ELSE ROUND((((TO_DAYS(NOW()) - TO_DAYS((DATE_FORMAT(`fun`.`Fun_FechaIngreso`, '2015-%m-%d') - INTERVAL 1 DAY))) * 15) / 365),
                     2)
         END) 
-        ELSE (CASE
-		    WHEN
-                ((TO_DAYS(NOW()) - TO_DAYS((DATE_FORMAT(`fun`.`Fun_FechaIngreso`, '2015-%m-%d') - INTERVAL 1 DAY))) >= 366)
+        ELSE (
+          CASE
+		    WHEN #si no supera un anio o es igual a un anio
+                ((TO_DAYS(NOW()) - TO_DAYS((DATE_FORMAT(`fun`.`Fun_FechaIngreso`, '%y-%m-%d') - INTERVAL 1 DAY ))) <= 
+                 TO_DAYS((DATE_FORMAT(`fun`.`Fun_FechaIngreso`, '%y-%m-%d') + INTERVAL 1 YEAR)))
             THEN
-                ROUND((((TO_DAYS(NOW()) - TO_DAYS((DATE_FORMAT(`fun`.`Fun_FechaIngreso`, '2016-%m-%d') - INTERVAL 1 DAY))) * 30) / 365),
-                        2)
-            ELSE ROUND((((TO_DAYS(NOW()) - TO_DAYS((DATE_FORMAT(`fun`.`Fun_FechaIngreso`, '2015-%m-%d') - INTERVAL 1 DAY))) * 30) / 365),
-                    2)
+                ROUND(
+                ( (
+                # DIA DE INGRESO
+                (30 -DATE_FORMAT(`fun`.`Fun_FechaIngreso`,'%d')+1) +
+                #MESES TRANCURRIDO EN EL ANIO MENOS MES INICIO * 30 
+                ((timestampdiff(month,`fun`.`Fun_FechaIngreso`,curdate())-1)*30)+
+                #((DATE_FORMAT(NOW(),'%m') - DATE_FORMAT(`fun`.`Fun_FechaIngreso`,'%m')-1)*30) +
+                #FECHA ACTUAL DIAS
+                (CASE   WHEN (DATE_FORMAT(NOW(),'%d') < 30)
+                 THEN DATE_FORMAT(NOW(),'%d')
+                 ELSE 30
+                 END)
+                )*30/360), 
+                2)
+                        
+            ELSE ROUND((((TO_DAYS(NOW()) - TO_DAYS((`fun`.`Fun_FechaIngreso`- INTERVAL 1 DAY))) * 1) / 1), 2)
         END
         )
         END
@@ -585,8 +664,9 @@ SELECT
                         WHEN ((TO_DAYS(NOW()) - TO_DAYS((DATE_FORMAT(`fun`.`Fun_FechaIngreso`, '2015-%m-%d') - INTERVAL 1 DAY))) >= 366) THEN (DATE_FORMAT(`fun`.`Fun_FechaIngreso`, '2017-%m-%d') - INTERVAL 1 DAY)
                         ELSE (DATE_FORMAT(`fun`.`Fun_FechaIngreso`, '2016-%m-%d') - INTERVAL 1 DAY)
                     END) USING UTF8))))
-        END)) AS `total`
+        END)) AS `total`,
+        Fun_Id
     FROM
         `funcionario` `fun`
     WHERE
-        (`fun`.`Fun_Estado` = 'activo') #and Fun_Id in (572,573)
+        (`fun`.`Fun_Estado` = 'activo') #and Fun_Id in (572,573,574,60,521,21)
