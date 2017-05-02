@@ -1,5 +1,5 @@
-#drop view viewcalculovacaciones;
-#create view viewcalculovacaciones as
+drop view viewcalculovacaciones;
+create view viewcalculovacaciones as
 SELECT 
         `fun`.`Fun_Apellidos` AS `Fun_Apellidos`,
         `fun`.`Fun_Nombres` AS `Fun_Nombres`,
@@ -669,4 +669,4 @@ SELECT
     FROM
         `funcionario` `fun`
     WHERE
-        (`fun`.`Fun_Estado` = 'activo') #and Fun_Id in (572,573,574,60,521,21)
+        (`fun`.`Fun_Estado` = 'activo') #and Fun_Id in (572,573,574,60,521,21,26)
