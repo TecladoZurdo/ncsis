@@ -22,7 +22,7 @@ SELECT
             THEN 
             `fun`.`Fun_FechaIngreso`
             WHEN # fecha formateada UN YEAR ACTUAL
-            to_days(date_format(`fun`.`Fun_FechaIngreso`,concat(date_format(now(),'%Y'),'-%m-%d')))-to_days(now())<0
+            to_days(date_format(`fun`.`Fun_FechaIngreso`,concat(date_format(now(),'%Y'),'-%m-%d')))-to_days(now())<=0
             and 
             date_format(`fun`.`Fun_FechaIngreso`,'%Y') <> date_format(now(),'%Y') 
             THEN 
@@ -55,7 +55,7 @@ SELECT
             THEN 
             `fun`.`Fun_FechaIngreso`
             WHEN # fecha formateada UN YEAR ACTUAL
-            to_days(date_format(`fun`.`Fun_FechaIngreso`,concat(date_format(now(),'%Y'),'-%m-%d')))-to_days(now())<0
+            to_days(date_format(`fun`.`Fun_FechaIngreso`,concat(date_format(now(),'%Y'),'-%m-%d')))-to_days(now())<=0
             and 
             date_format(`fun`.`Fun_FechaIngreso`,'%Y') <> date_format(now(),'%Y') 
             THEN 
@@ -72,9 +72,8 @@ SELECT
         AS `finperiodo`,
         
         DATE_FORMAT(NOW(), '%Y-%m-%d') AS `fechaactual`,
-        (CASE WHEN losep=1
-         then 0
-         else 
+        (CASE WHEN losep=1  then 0
+       ELSE 
         (CASE
             WHEN
                 (TIMESTAMPDIFF(YEAR,
@@ -176,7 +175,7 @@ SELECT
                 14
             ELSE 0
         END) 
-        end)
+        END) #CASE LOEP
         AS `antiguedad`,
         (CASE
             WHEN
@@ -669,4 +668,4 @@ SELECT
     FROM
         `funcionario` `fun`
     WHERE
-        (`fun`.`Fun_Estado` = 'activo') #and Fun_Id in (572,573,574,60,521,21,26)
+        (`fun`.`Fun_Estado` = 'activo') #and Fun_Id in (572,573,574,60,521,21,26,17)
