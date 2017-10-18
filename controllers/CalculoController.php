@@ -343,7 +343,7 @@ class CalculoController extends Controller {
 
     }else {  // si es primera vez
 
-        if ($fecha_ingreso > $fecha_base){
+        if ($fecha_ingreso > $fecha_base){ //-- ingreso en este periodo
 
 
                 $fechas = $this->calcularIntervalo($fecha_ingreso,null);
@@ -357,6 +357,8 @@ class CalculoController extends Controller {
                 $valores['vac_acu_lab'] = $saldoAcumuladoL;
                 $valores['vac_acu_cal'] = $saldoAcumuladoC;
 
+        } else {  // ingreso antes de este periodo
+            //-- sin soporte aun
         }
     }
     //anio
@@ -447,7 +449,8 @@ public function diasTrancurridos($fechaInicio,$fechaFinal){
             $fechas = $this->calcularIntervalo($fecha_origen,$calculoAnterior);
             $fecha_fin = new \DateTime($fechas['fecha_fin']);
             $fecha_inicio = new \DateTime($fechas['fecha_inicio']);
-            $dias = $this->diasAntiguedad($fecha_origen->format('Y'), $fecha_fin->format('Y'));
+            $anio_exacto = $fechas['fecha_exacta'];
+            $dias = $this->diasAntiguedad($fecha_origen->format('Y'), $fecha_fin->format('Y'), $anio_exacto);
             $valores['fecha_inicio'] = $fechas['fecha_inicio'];
             $valores['anio'] = $fecha_inicio->format('Y');
             $valores['dias_ley_lab'] = $dias['dias_lab'];
@@ -469,6 +472,7 @@ public function diasTrancurridos($fechaInicio,$fechaFinal){
             $fechas = $this->calcularIntervalo($fecha_origen,NULL);
             $fecha_inicio = new \DateTime($fechas['fecha_inicio']);
             $fecha_fin = new \DateTime($fechas['fecha_fin']);
+            $anio_exacto = $fechas['fecha_exacta'];
             $valores['fecha_inicio'] = $fechas['fecha_inicio'];
                 if ($fecha_fin < $fecha_actual) {
                     $valores['fecha_fin'] = $fecha_fin->format('Y-m-d');
@@ -479,7 +483,7 @@ public function diasTrancurridos($fechaInicio,$fechaFinal){
                     $valores['vac_acu_lab'] = '0';
                     $valores['tipo'] = 'primer calculo';
                 } else {
-                    $dias = $this->diasAntiguedad($fecha_origen->format('Y'), $fecha_fin->format('Y'));
+                    $dias = $this->diasAntiguedad($fecha_origen->format('Y'), $fecha_fin->format('Y'), $anio_exacto);
                     $valores['fecha_fin'] = $fecha_actual->format('Y-m-d');
                     $valores['anio'] = $fecha_actual->format('Y');
                     $valores['dias_ley_lab'] = $dias['dias_lab'];
@@ -503,21 +507,28 @@ public function diasTrancurridos($fechaInicio,$fechaFinal){
     private function calcularIntervalo($fechaIngreso,$fechaUltCalculo) {
 
         if ($fechaUltCalculo==null){
+
          $fecha_inicio = $fechaIngreso;
+
         }else {
+        
         $fechaUltimoCalculo = new \DateTime($fechaUltCalculo);
         $anioultimoCalculo = $fechaUltimoCalculo->format('Y');
         $fechainicioPeriodo = $anioultimoCalculo . "-" . $fechaIngreso->format('m') . "-" . $fechaIngreso->format("d");
         $fecha_inicio = new \DateTime($fechainicioPeriodo);
+        
         }
 
 
-
+        /**
+        si inicio el 01 del anio
+        */
         if ($fecha_inicio->format('m') == "01" && $fecha_inicio->format("d") == "01") {
             $anioPeriodo = $fecha_inicio->format('Y') + 1;
             $fecha_inicio->setDate($anioPeriodo, "01", "01");
             $fecha_final = $anioPeriodo . "-12-31";
             $fecha_fin = new \DateTime($fecha_final);
+            $anio_exacto = true;
         } else {
             /**
              * “Un año es bisiesto si es divisible entre 4,
@@ -527,9 +538,11 @@ public function diasTrancurridos($fechaInicio,$fechaFinal){
 
             $fecha_fin = new \DateTime($fecha_inicio->format('Y-m-d'));
             $fecha_fin->add($intervalo);
+            $anio_exacto = false;
         }
         $fechas['fecha_inicio'] = $fecha_inicio->format('Y-m-d');
         $fechas['fecha_fin'] = $fecha_fin->format('Y-m-d');
+        $fechas['fecha_exacta'] = $anio_exacto;
         return $fechas;
     }
 
@@ -583,7 +596,7 @@ public function diasTrancurridos($fechaInicio,$fechaFinal){
         return $valores;
     }
 
-    private function diasAntiguedad($anio_ini, $anio_fin) {
+    private function diasAntiguedad($anio_ini, $anio_fin, $anio_completo) {
 
         $dias_cal = $anio_fin - $anio_ini - 5;
         $dias_lab = $dias_cal;
@@ -597,8 +610,15 @@ public function diasTrancurridos($fechaInicio,$fechaFinal){
             $dias_cal = 0;
             $dias_lab = 0;
         }
-        $valores['dias_lab'] = $dias_lab;
-        $valores['dias_cal'] = $dias_cal;
+
+        if ($anio_completo){ // sumo 1 dia
+            $valores['dias_lab'] = $dias_lab + 1;
+            $valores['dias_cal'] = $dias_cal + 1;
+        }else {  //-- calculo normal
+            $valores['dias_lab'] = $dias_lab;
+            $valores['dias_cal'] = $dias_cal;
+        }
+        
         return $valores;
     }
 
