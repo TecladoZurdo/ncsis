@@ -166,7 +166,14 @@ function calcular_duracion_lab(fecha_ini, fecha_fin) {
 
     return vac.toFixed(2);
 }
+
+/**
+* Dias de antiguedad
+* fund_id : identificador del colaborador
+* fecha: fecha seleccionada como fin de periodo a calcular
+*/
 function diasley(Fun_Id, fecha) {
+  
     var jsonData = $.ajax({
         type: 'POST',
         url: 'diasley?id=' + Fun_Id + '&fecha=' + fecha,

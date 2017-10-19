@@ -622,6 +622,11 @@ public function diasTrancurridos($fechaInicio,$fechaFinal){
         return $valores;
     }
 
+/**
+* Calculo de dias de antiguedad 
+* id : id del funcionario 
+* fecha : fecha selecionada como final del perdio a calcular
+*/
     public function actionDiasley($id, $fecha) {
         $fecha_base = new \DateTime($fecha);
         $funcionario = $this->findFuncionario($id);
@@ -648,6 +653,20 @@ public function diasTrancurridos($fechaInicio,$fechaFinal){
             $dias_cal = 0;
             $dias_lab = 0;
         }
+
+        // condicionales para colaboradores que ingresaron el 01 - 01 de un periodo
+        if ( ( $fecha_origen->format('m') == 01 ) &&  ( $fecha_origen->format('d') == 01 ) ){
+            
+            //-- controlamos si escogio fin de periodo 
+            if ( ( $fecha_base->format('m') == 12 ) && ( $fecha_base->format('d') == 31 ) ) {
+                $dias_cal = $dias_cal + 1;
+                $dias_lab = $dias_lab + 1;
+            }
+
+        }else { //-- termina en otro mes
+            //-- codigo
+        }
+
         $valores['dias_cal'] = $dias_cal;
         $valores['dias_lab'] = $dias_lab;
         echo json_encode($valores);
