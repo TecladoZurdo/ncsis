@@ -4,35 +4,7 @@ select
      `fun`.`Fun_Apellidos` AS `Fun_Apellidos`,
     `fun`.`Fun_Nombres` AS `Fun_Nombres`,
     `fun`.`Fun_FechaIngreso` AS `Fun_FechaIngreso`, 
-#-------------------------------------------INICIO DE PERIODO ------------------------------------------------------
-        (case when (((to_days(now()) - to_days(date_format(`fun`.`Fun_FechaIngreso`,
-                            '%Y-%m-%d'))) >= 0) and ((to_days(now()) - to_days((date_format(`fun`.`Fun_FechaIngreso`,
-                                '%Y-%m-%d') - interval 1 day))) < 365) and (date_format(`fun`.`Fun_FechaIngreso`,
-                    '%Y') = date_format(now(),
-                    '%Y'))) then date_format(`fun`.`Fun_FechaIngreso`,
-            concat(date_format(now(),
-                    '%Y'),
-                '-%m-%d')) when (((to_days(now()) - to_days(date_format(`fun`.`Fun_FechaIngreso`,
-                            '%Y-%m-%d'))) >= 0) and ((to_days(now()) - to_days((date_format(`fun`.`Fun_FechaIngreso`,
-                                '%Y-%m-%d') - interval 1 day))) < 365) and (date_format(`fun`.`Fun_FechaIngreso`,
-                    '%Y') <> date_format(now(),
-                    '%Y'))) then `fun`.`Fun_FechaIngreso` when (((to_days(date_format(`fun`.`Fun_FechaIngreso`,
-                            concat(date_format(now(),
-                                    '%Y'),
-                                '-%m-%d'))) - to_days(now())) <= 0) and (date_format(`fun`.`Fun_FechaIngreso`,
-                    '%Y') <> date_format(now(),
-                    '%Y'))) then date_format(`fun`.`Fun_FechaIngreso`,
-            concat(date_format(now(),
-                    '%Y'),
-                '-%m-%d')) when (((to_days(date_format(`fun`.`Fun_FechaIngreso`,
-                            concat(date_format(now(),
-                                    '%Y'),
-                                '-%m-%d'))) - to_days(now())) > 1) and (date_format(`fun`.`Fun_FechaIngreso`,
-                    '%Y') < date_format(now(),
-                    '%Y'))) then date_format(`fun`.`Fun_FechaIngreso`,
-            concat((date_format(now(),
-                        '%Y') - 1),
-                '-%m-%d')) end) AS `iniperiodo`, 
+     date_format(InicioPeriodo(Fun_FechaIngreso),'%Y-%m-%d') as `iniperiodo`, 
 #---------------------------------------------- FIN DE PERIODO --------------------------------------------------------------
         (((case when (((to_days(now()) - to_days(date_format(`fun`.`Fun_FechaIngreso`,
                                     '%Y-%m-%d'))) >= 0) and ((to_days(now()) - to_days((date_format(`fun`.`Fun_FechaIngreso`,
@@ -299,13 +271,13 @@ select
                                                   then round((((to_days(now()) - to_days((date_format(`fun`.`Fun_FechaIngreso`,'2016-%m-%d') - interval 1 day))) * 15) / 360), 2) 
                                                   else round((((to_days(now()) - to_days((date_format(`fun`.`Fun_FechaIngreso`,'2015-%m-%d') - interval 1 day))) * 15) /360),2) 
                                               end) 
-                                        else (case when ((to_days(now()) - to_days((date_format(`fun`.`Fun_FechaIngreso`,'%y-%m-%d') - interval 1 day))) 
+                                        else (case when ((to_days(now()) - to_days((date_format(InicioPeriodo(Fun_FechaIngreso),'%y-%m-%d') - interval 1 day))) 
                                                           <= 
-                                                          to_days((date_format(`fun`.`Fun_FechaIngreso`,'%y-%m-%d') + interval 1 year))) 
-                                                   then round(((((((30 - date_format(`fun`.`Fun_FechaIngreso`,'%d')) + 1) + 
-                                                        ((timestampdiff(MONTH,`fun`.`Fun_FechaIngreso`, curdate()) - 1) * 30)) + 
+                                                          to_days((date_format(InicioPeriodo(Fun_FechaIngreso),'%y-%m-%d') + interval 1 year))) 
+                                                   then round(((((((30 - date_format(InicioPeriodo(Fun_FechaIngreso),'%d')) + 1) + 
+                                                        ((timestampdiff(MONTH,InicioPeriodo(Fun_FechaIngreso), curdate()) - 1) * 30)) + 
                                                         (case when (date_format(now(),'%d') < 30) then date_format(now(),'%d') else 30 end)) * 30) /360), 2) 
-                                                   else round((((to_days(now()) - to_days((`fun`.`Fun_FechaIngreso` - interval 1 day))) * 1) / 1),2) 
+                                                   else round((((to_days(now()) - to_days((InicioPeriodo(Fun_FechaIngreso) - interval 1 day))) * 1) / 1),2) 
                  end) 
                 end) AS `diasdevengados`,     
 #----------------------- SALDO ANTERIOR --------------------------------------------------------                
