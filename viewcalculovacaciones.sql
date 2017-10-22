@@ -267,9 +267,9 @@ select
 # --------------------------------- LOEP ---------------------------------------------------------------------------------------------                                        
         (case when (`fun`.`losep` = 1) then 'SI' else 'NO' end) AS `loep`,      
 # ---------------------------------- DIAS DEVENGADOS -----------------------------------------------------------------------------------        
-        (case when (`fun`.`losep` = 0) then (case when ((to_days(now()) - to_days((date_format(`fun`.`Fun_FechaIngreso`,'2015-%m-%d') - interval 1 day))) >= 366) 
-                                                  then round((((to_days(now()) - to_days((date_format(`fun`.`Fun_FechaIngreso`,'2016-%m-%d') - interval 1 day))) * 15) / 360), 2) 
-                                                  else round((((to_days(now()) - to_days((date_format(`fun`.`Fun_FechaIngreso`,'2015-%m-%d') - interval 1 day))) * 15) /360),2) 
+        (case when (`fun`.`losep` = 0) then (case when ((to_days(now()) - to_days((date_format(`fun`.`Fun_FechaIngreso`,'%Y-%m-%d') - interval 1 day))) >= 366) 
+                                                  then round((((to_days(now()) - to_days((date_format(`fun`.`Fun_FechaIngreso`,'%Y-%m-%d') - interval 1 day))) * 15) / 360), 2) 
+                                                  else round((((to_days(now()) - to_days((date_format(InicioPeriodo(Fun_FechaIngreso),'%Y-%m-%d') - interval 1 day))) * 15) /360),2) 
                                               end) 
                                         else (case when ((to_days(now()) - to_days((date_format(InicioPeriodo(Fun_FechaIngreso),'%y-%m-%d') - interval 1 day))) 
                                                           <= 
