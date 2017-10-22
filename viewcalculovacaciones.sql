@@ -3,39 +3,13 @@ create view viewcalculovacaciones as
 select
      `fun`.`Fun_Apellidos` AS `Fun_Apellidos`,
     `fun`.`Fun_Nombres` AS `Fun_Nombres`,
-    `fun`.`Fun_FechaIngreso` AS `Fun_FechaIngreso`, 
+    `fun`.`Fun_FechaIngreso` AS `Fun_FechaIngreso`,      
+#---------------------------------------------- INICIO PERIODOD -------------------------------------------------------------    
      date_format(InicioPeriodo(Fun_FechaIngreso),'%Y-%m-%d') as `iniperiodo`, 
-#---------------------------------------------- FIN DE PERIODO --------------------------------------------------------------
-        (((case when (((to_days(now()) - to_days(date_format(`fun`.`Fun_FechaIngreso`,
-                                    '%Y-%m-%d'))) >= 0) and ((to_days(now()) - to_days((date_format(`fun`.`Fun_FechaIngreso`,
-                                        '%Y-%m-%d') - interval 1 day))) < 365) and (date_format(`fun`.`Fun_FechaIngreso`,
-                            '%Y') = date_format(now(),
-                            '%Y'))) then date_format(`fun`.`Fun_FechaIngreso`,
-                    concat(date_format(now(),
-                            '%Y'),
-                        '-%m-%d')) when (((to_days(now()) - to_days(date_format(`fun`.`Fun_FechaIngreso`,
-                                    '%Y-%m-%d'))) >= 0) and ((to_days(now()) - to_days((date_format(`fun`.`Fun_FechaIngreso`,
-                                        '%Y-%m-%d') - interval 1 day))) < 365) and (date_format(`fun`.`Fun_FechaIngreso`,
-                            '%Y') <> date_format(now(),
-                            '%Y'))) then `fun`.`Fun_FechaIngreso` when (((to_days(date_format(`fun`.`Fun_FechaIngreso`,
-                                    concat(date_format(now(),
-                                            '%Y'),
-                                        '-%m-%d'))) - to_days(now())) <= 0) and (date_format(`fun`.`Fun_FechaIngreso`,
-                            '%Y') <> date_format(now(),
-                            '%Y'))) then date_format(`fun`.`Fun_FechaIngreso`,
-                    concat(date_format(now(),
-                            '%Y'),
-                        '-%m-%d')) when (((to_days(date_format(`fun`.`Fun_FechaIngreso`,
-                                    concat(date_format(now(),
-                                            '%Y'),
-                                        '-%m-%d'))) - to_days(now())) > 1) and (date_format(`fun`.`Fun_FechaIngreso`,
-                            '%Y') < date_format(now(),
-                            '%Y'))) then date_format(`fun`.`Fun_FechaIngreso`,
-                    concat((date_format(now(),
-                                '%Y') - 1),
-                        '-%m-%d')) end) + interval 1 year) - interval 1 day) AS `finperiodo`,
-    date_format(now(),
-        '%Y-%m-%d') AS `fechaactual`,
+#---------------------------------------------- FIN DE PERIODO --------------------------------------------------------------        
+date_format(FinPeriodo(Fun_FechaIngreso),'%Y-%m-%d') as `finperiodo`,
+#-------------------------------- FECHA ACTUAL --------------------------------------------------------------------------                        
+    date_format(now(),'%Y-%m-%d') AS `fechaactual`,
 #-----------------------------------------------------ANTIGUEDAD   ----------------------------------------------------
         (case when (`fun`.`losep` = 1) then 0 else (case when (timestampdiff(YEAR,
                     date_format(cast(`fun`.`Fun_FechaIngreso` as date),
@@ -97,39 +71,12 @@ select
 #------------------------------------------ DESCUENTOS ---------------------------------------------------------------------------------
 (CASE
             WHEN
-                ISNULL((SELECT 
-                                SUM(`per`.`Per_ValorCal`)
-                            FROM
-                                (`permisos` `per`
-                                JOIN `tipopermiso` `tp` ON (((`per`.`Tiper_Id` = `tp`.`Tiper_Id`)
-                                    AND (`tp`.`descuentoVacaciones` = 1))))
-                            WHERE
-                                ((`per`.`Fun_Id` = `fun`.`Fun_Id`)
-                                    AND (`per`.`Per_FechaInicio` BETWEEN CONVERT( (CASE
-                                    WHEN ((TO_DAYS(NOW()) - TO_DAYS((DATE_FORMAT(`fun`.`Fun_FechaIngreso`, '2015-%m-%d') - INTERVAL 1 DAY))) >= 366) THEN DATE_FORMAT(`fun`.`Fun_FechaIngreso`, '2016-%m-%d')
-                                    ELSE DATE_FORMAT(`fun`.`Fun_FechaIngreso`, '2015-%m-%d')
-                                END) USING UTF8) AND CONVERT( (CASE
-                                    WHEN ((TO_DAYS(NOW()) - TO_DAYS((DATE_FORMAT(`fun`.`Fun_FechaIngreso`, '2015-%m-%d') - INTERVAL 1 DAY))) >= 366) THEN (DATE_FORMAT(`fun`.`Fun_FechaIngreso`, '2017-%m-%d') - INTERVAL 1 DAY)
-                                    ELSE (DATE_FORMAT(`fun`.`Fun_FechaIngreso`, '2016-%m-%d') - INTERVAL 1 DAY)
-                                END) USING UTF8)))))
-            THEN
-                0
-            ELSE (SELECT 
-                    SUM(`per`.`Per_ValorCal`)
-                FROM
-                    (`permisos` `per`
-                    JOIN `tipopermiso` `tp` ON (((`per`.`Tiper_Id` = `tp`.`Tiper_Id`)
-                        AND (`tp`.`descuentoVacaciones` = 1))))
-                WHERE
-                    ((`per`.`Fun_Id` = `fun`.`Fun_Id`)
-                        AND (`per`.`Per_FechaInicio` BETWEEN CONVERT( (CASE
-                        WHEN ((TO_DAYS(NOW()) - TO_DAYS((DATE_FORMAT(`fun`.`Fun_FechaIngreso`, '2015-%m-%d') - INTERVAL 1 DAY))) >= 366) THEN DATE_FORMAT(`fun`.`Fun_FechaIngreso`, '2016-%m-%d')
-                        ELSE DATE_FORMAT(`fun`.`Fun_FechaIngreso`, '2015-%m-%d')
-                    END) USING UTF8) AND CONVERT( (CASE
-                        WHEN ((TO_DAYS(NOW()) - TO_DAYS((DATE_FORMAT(`fun`.`Fun_FechaIngreso`, '2015-%m-%d') - INTERVAL 1 DAY))) >= 366) THEN (DATE_FORMAT(`fun`.`Fun_FechaIngreso`, '2017-%m-%d') - INTERVAL 1 DAY)
-                        ELSE (DATE_FORMAT(`fun`.`Fun_FechaIngreso`, '2016-%m-%d') - INTERVAL 1 DAY)
-                    END) USING UTF8))))
-        END) AS `descuentos`,                             
+                ISNULL ((SELECT  SUM(`per`.`Per_ValorCal`)  FROM (`permisos` `per` JOIN  `tipopermiso` `tp` ON (((`per`.`Tiper_Id` = `tp`.`Tiper_Id`)  AND (`tp`.`descuentoVacaciones` = 1))))
+                            WHERE  ((`per`.`Fun_Id` = `fun`.`Fun_Id`)   AND (`per`.`Per_FechaInicio` BETWEEN  InicioPeriodo(Fun_FechaIngreso) and FinPeriodo(Fun_FechaIngreso) ))  ))
+            THEN  0
+            ELSE (SELECT SUM(`per`.`Per_ValorCal`)  FROM  (`permisos` `per` JOIN `tipopermiso` `tp` ON (((`per`.`Tiper_Id` = `tp`.`Tiper_Id`)   AND (`tp`.`descuentoVacaciones` = 1))))
+                     WHERE ((`per`.`Fun_Id` = `fun`.`Fun_Id`)   AND (`per`.`Per_FechaInicio` BETWEEN  InicioPeriodo(Fun_FechaIngreso) and FinPeriodo(Fun_FechaIngreso) ))  )
+            END) AS `descuentos`,                             
 #------------------------------------------ DESCUENTO LABORALES--------------------------------------------------------------------------
         (case when (((case when isnull((
                         select
@@ -321,37 +268,21 @@ select
                                      end)  
                 end) AS `diasdevengados`,        
 #----------------------- SALDO ANTERIOR -----------------------------------------------------------------------------------------------                
-        (case when ((
-            select
-                 count(0) 
-            from `bd_sisvac`.`calculo` 
-            where
-                 (`bd_sisvac`.`calculo`.`Fun_Id` = `fun`.`Fun_Id`)) = 1) then (
-        select
-             `cal1`.`Cal_DiasCal` 
-        from `bd_sisvac`.`calculo` `cal1` 
-        where
-             (`cal1`.`Cal_Id` = (
-                select
-                     max(`bd_sisvac`.`calculo`.`Cal_Id`) 
-                from `bd_sisvac`.`calculo` 
-                where
-                     (`bd_sisvac`.`calculo`.`Fun_Id` = `fun`.`Fun_Id`)))) when ((
-            select
-                 count(0) 
-            from `bd_sisvac`.`calculo` 
-            where
-                 (`bd_sisvac`.`calculo`.`Fun_Id` = `fun`.`Fun_Id`)) = 2) then (
-        select
-             `cal1`.`Cal_SalCal` 
-        from `bd_sisvac`.`calculo` `cal1` 
-        where
-             (`cal1`.`Cal_Id` = (
-                select
-                     max(`bd_sisvac`.`calculo`.`Cal_Id`) 
-                from `bd_sisvac`.`calculo` 
-                where
-                     (`bd_sisvac`.`calculo`.`Fun_Id` = `fun`.`Fun_Id`)))) else 0 end) AS `saldoanterior`, 
+        (case when (( select   count(0)   from `bd_sisvac`.`calculo` where  (`bd_sisvac`.`calculo`.`Fun_Id` = `fun`.`Fun_Id`)) = 1) 
+              then (  select `cal1`.`Cal_DiasCal`   from `bd_sisvac`.`calculo` `cal1` 
+                        where  (`cal1`.`Cal_Id` = (
+                         select     max(`bd_sisvac`.`calculo`.`Cal_Id`) 
+                         from `bd_sisvac`.`calculo` 
+                         where  (`bd_sisvac`.`calculo`.`Fun_Id` = `fun`.`Fun_Id`)))) 
+              when ((  select   count(0)  from `bd_sisvac`.`calculo`  where (`bd_sisvac`.`calculo`.`Fun_Id` = `fun`.`Fun_Id`)) >= 2) 
+              then ( select `cal1`.`Cal_SalCal` 
+                    from `bd_sisvac`.`calculo` `cal1` 
+                    where (`cal1`.`Cal_Id` = (
+                        select  max(`bd_sisvac`.`calculo`.`Cal_Id`) 
+                        from `bd_sisvac`.`calculo` 
+                        where (`bd_sisvac`.`calculo`.`Fun_Id` = `fun`.`Fun_Id`)))) 
+              else 0 
+         end) AS `saldoanterior`, 
 # -------------------------- SALDO ANTERIOR LAB ----------------------------------------------------------------------                     
         (case when ((
             select
@@ -444,4 +375,4 @@ select
     `fun`.`Fun_Id` AS `Fun_Id` 
 from `bd_sisvac`.`funcionario` `fun` 
 where
-     (`fun`.`Fun_Estado` = 'activo') 
+     (`fun`.`Fun_Estado` = 'activo')  
