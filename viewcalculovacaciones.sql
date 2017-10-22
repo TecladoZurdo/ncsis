@@ -280,7 +280,7 @@ select
                                                    else round((((to_days(now()) - to_days((InicioPeriodo(Fun_FechaIngreso) - interval 1 day))) * 1) / 1),2) 
                  end) 
                 end) AS `diasdevengados`,     
-#----------------------- SALDO ANTERIOR --------------------------------------------------------                
+#----------------------- SALDO ANTERIOR -----------------------------------------------------------------------------------------------                
         (case when ((
             select
                  count(0) 
@@ -312,7 +312,7 @@ select
                 from `bd_sisvac`.`calculo` 
                 where
                      (`bd_sisvac`.`calculo`.`Fun_Id` = `fun`.`Fun_Id`)))) else 0 end) AS `saldoanterior`, 
-# -------------------------- SALDO ANTERIOR LAB --------------------------------------------------------                     
+# -------------------------- SALDO ANTERIOR LAB ----------------------------------------------------------------------                     
         (case when ((
             select
                  count(0) 
@@ -344,7 +344,7 @@ select
                 from `bd_sisvac`.`calculo` 
                 where
                      (`bd_sisvac`.`calculo`.`Fun_Id` = `fun`.`Fun_Id`)))) else 0 end) AS `saldoanteriorLab`,  
-#-------------------------- TOTAL-----------------------------------------------------------------------------                     
+#------------------------------------------- TOTAL-----------------------------------------------------------------------------                     
         ((case when ((
                 select
                      count(0) 
@@ -400,8 +400,8 @@ select
                                                     '2015-%m-%d') - interval 1 day))) >= 366) then (date_format(`fun`.`Fun_FechaIngreso`,
                                         '2017-%m-%d') - interval 1 day) else (date_format(`fun`.`Fun_FechaIngreso`,
                                         '2016-%m-%d') - interval 1 day) end) using utf8)))) end)) AS `total`, 
-#-------------------------------------- FUNCIONARIO ID -------------------------------------------------------                                        
+#-------------------------------------- FUNCIONARIO ID -----------------------------------------------------------------------                                        
     `fun`.`Fun_Id` AS `Fun_Id` 
 from `bd_sisvac`.`funcionario` `fun` 
 where
-     (`fun`.`Fun_Estado` = 'activo')  AND Fun_Id=112
+     (`fun`.`Fun_Estado` = 'activo') 
