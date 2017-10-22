@@ -1,5 +1,5 @@
-#drop view viewcalculovacaciones;
-#create view viewcalculovacaciones as
+drop view viewcalculovacaciones;
+create view viewcalculovacaciones as
 select
      `fun`.`Fun_Apellidos` AS `Fun_Apellidos`,
     `fun`.`Fun_Nombres` AS `Fun_Nombres`,
@@ -312,11 +312,11 @@ select
                                            else "error" #round((((to_days(now()) - to_days((InicioPeriodo(Fun_FechaIngreso) - interval 1 day))) * 1) / 1),2)
                                       end)
                                else (case when ((to_days(now()) - to_days((date_format(`fun`.`Fun_FechaIngreso`,'%Y-%m-%d') - interval 1 day))) >= 366) 
-                                          then  "aqui"
-                                                #round(((((((30 - date_format(InicioPeriodo(Fun_FechaIngreso),'%d')) + 1) + 
-                                                #((timestampdiff(MONTH,InicioPeriodo(Fun_FechaIngreso), curdate()) - 1) * 30)) + 
-                                                #(case when (date_format(now(),'%d') < 30) then date_format(now(),'%d') else 30 end)) * 15) /360), 2) 
-                                          #round((((to_days(now()) - to_days((date_format(InicioPeriodo(Fun_FechaIngreso),'%Y-%m-%d') - interval 1 day))) * 15) /360),2)
+                                          then  round ( 
+                                          (
+                                          (DATEDIFF(NOW(),InicioPeriodo(Fun_FechaIngreso))+1) *15)
+                                            /360,2 
+                                            )                                          
                                           else "error" #round((((to_days(now()) - to_days((date_format(`fun`.`Fun_FechaIngreso`,'%Y-%m-%d') - interval 1 day))) * 15) /360),2) 
                                      end)  
                 end) AS `diasdevengados`,        
@@ -444,4 +444,4 @@ select
     `fun`.`Fun_Id` AS `Fun_Id` 
 from `bd_sisvac`.`funcionario` `fun` 
 where
-     (`fun`.`Fun_Estado` = 'activo')   and Fun_Id=182
+     (`fun`.`Fun_Estado` = 'activo') 
