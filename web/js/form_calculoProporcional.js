@@ -1,5 +1,6 @@
 var loep =0;
 $(function () {
+
     $("#funcionario").autocomplete({
         source: "buscarfuncionario", //de donde jala los datos
         minLength: 2,
@@ -10,7 +11,7 @@ $(function () {
             $("#fecha_ing").val(ui.item.fecha);
             $("#codigo").val(ui.item.codigo);
             loep = ui.item.losep;
-            console.log(loep);
+            
         }
     });
 
@@ -180,11 +181,17 @@ function diasley(Fun_Id, fecha) {
         dataType: 'json',
         async: false}).responseText;
     var obj = jQuery.parseJSON(jsonData);
-    if (obj.dias > 15)
+    if (loep) {
+      $('#dias_ley_cal').val(0);
+      $('#dias_ley_lab').val(0);  
+    }else {
+     if (obj.dias > 15)
         $('#dias_ley_cal').val('15');
     else
         $('#dias_ley_cal').val(obj.dias_cal);
-    $('#dias_ley_lab').val(obj.dias_lab);
+    $('#dias_ley_lab').val(obj.dias_lab);  
+    }
+    
 
 
 }
