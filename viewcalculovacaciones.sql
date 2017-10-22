@@ -1,5 +1,5 @@
-drop view viewcalculovacaciones;
-create view viewcalculovacaciones as
+#drop view viewcalculovacaciones;
+#create view viewcalculovacaciones as
 select
      `fun`.`Fun_Apellidos` AS `Fun_Apellidos`,
     `fun`.`Fun_Nombres` AS `Fun_Nombres`,
@@ -302,20 +302,24 @@ select
                                         '2016-%m-%d') - interval 1 day) end) using utf8)))) end) end) AS `descuentoslaborables`,   
 # --------------------------------- LOEP ---------------------------------------------------------------------------------------------                                        
         (case when (`fun`.`losep` = 1) then 'SI' else 'NO' end) AS `loep`,      
-# ---------------------------------- DIAS DEVENGADOS -----------------------------------------------------------------------------------        
-        (case when (`fun`.`losep` = 0) then (case when ((to_days(now()) - to_days((date_format(`fun`.`Fun_FechaIngreso`,'%Y-%m-%d') - interval 1 day))) >= 366) 
-                                                  then round((((to_days(now()) - to_days((date_format(`fun`.`Fun_FechaIngreso`,'%Y-%m-%d') - interval 1 day))) * 15) / 360), 2) 
-                                                  else round((((to_days(now()) - to_days((date_format(InicioPeriodo(Fun_FechaIngreso),'%Y-%m-%d') - interval 1 day))) * 15) /360),2) 
-                                              end) 
-                                        else (case when ((to_days(now()) - to_days((date_format(InicioPeriodo(Fun_FechaIngreso),'%y-%m-%d') - interval 1 day))) 
+# ---------------------------------- DIAS DEVENGADOS -----------------------------------------------------------------------------------
+(case when (`fun`.`losep` = 1) then  (case when ((to_days(now()) - to_days((date_format(InicioPeriodo(Fun_FechaIngreso),'%y-%m-%d') - interval 1 day))) 
                                                           <= 
-                                                          to_days((date_format(InicioPeriodo(Fun_FechaIngreso),'%y-%m-%d') + interval 1 year))) 
-                                                   then round(((((((30 - date_format(InicioPeriodo(Fun_FechaIngreso),'%d')) + 1) + 
+                                                to_days((date_format(InicioPeriodo(Fun_FechaIngreso),'%y-%m-%d') + interval 1 year))) 
+                                           then round(((((((30 - date_format(InicioPeriodo(Fun_FechaIngreso),'%d')) + 1) + 
                                                         ((timestampdiff(MONTH,InicioPeriodo(Fun_FechaIngreso), curdate()) - 1) * 30)) + 
                                                         (case when (date_format(now(),'%d') < 30) then date_format(now(),'%d') else 30 end)) * 30) /360), 2) 
-                                                   else round((((to_days(now()) - to_days((InicioPeriodo(Fun_FechaIngreso) - interval 1 day))) * 1) / 1),2) 
-                 end) 
-                end) AS `diasdevengados`,     
+                                           else "error" #round((((to_days(now()) - to_days((InicioPeriodo(Fun_FechaIngreso) - interval 1 day))) * 1) / 1),2)
+                                      end)
+                               else (case when ((to_days(now()) - to_days((date_format(`fun`.`Fun_FechaIngreso`,'%Y-%m-%d') - interval 1 day))) >= 366) 
+                                          then  "aqui"
+                                                #round(((((((30 - date_format(InicioPeriodo(Fun_FechaIngreso),'%d')) + 1) + 
+                                                #((timestampdiff(MONTH,InicioPeriodo(Fun_FechaIngreso), curdate()) - 1) * 30)) + 
+                                                #(case when (date_format(now(),'%d') < 30) then date_format(now(),'%d') else 30 end)) * 15) /360), 2) 
+                                          #round((((to_days(now()) - to_days((date_format(InicioPeriodo(Fun_FechaIngreso),'%Y-%m-%d') - interval 1 day))) * 15) /360),2)
+                                          else "error" #round((((to_days(now()) - to_days((date_format(`fun`.`Fun_FechaIngreso`,'%Y-%m-%d') - interval 1 day))) * 15) /360),2) 
+                                     end)  
+                end) AS `diasdevengados`,        
 #----------------------- SALDO ANTERIOR -----------------------------------------------------------------------------------------------                
         (case when ((
             select
@@ -440,4 +444,4 @@ select
     `fun`.`Fun_Id` AS `Fun_Id` 
 from `bd_sisvac`.`funcionario` `fun` 
 where
-     (`fun`.`Fun_Estado` = 'activo') 
+     (`fun`.`Fun_Estado` = 'activo')   and Fun_Id=182
