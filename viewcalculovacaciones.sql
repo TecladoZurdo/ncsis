@@ -1,5 +1,5 @@
-#drop view viewcalculovacaciones;
-#create view viewcalculovacaciones as
+drop view viewcalculovacaciones;
+create view viewcalculovacaciones as
 select
      `fun`.`Fun_Apellidos` AS `Fun_Apellidos`,
     `fun`.`Fun_Nombres` AS `Fun_Nombres`,
@@ -93,7 +93,43 @@ select
                     date_format(cast(`fun`.`Fun_FechaIngreso` as date),
                         '%Y/%m/%d'),
                     date_format(now(),
-                        '%Y/%m/%d')) >= 18) then 14 else 0 end) end) AS `antiguedad`,       
+                        '%Y/%m/%d')) >= 18) then 14 else 0 end) end) AS `antiguedad`,  
+#------------------------------------------ DESCUENTOS ---------------------------------------------------------------------------------
+(CASE
+            WHEN
+                ISNULL((SELECT 
+                                SUM(`per`.`Per_ValorCal`)
+                            FROM
+                                (`permisos` `per`
+                                JOIN `tipopermiso` `tp` ON (((`per`.`Tiper_Id` = `tp`.`Tiper_Id`)
+                                    AND (`tp`.`descuentoVacaciones` = 1))))
+                            WHERE
+                                ((`per`.`Fun_Id` = `fun`.`Fun_Id`)
+                                    AND (`per`.`Per_FechaInicio` BETWEEN CONVERT( (CASE
+                                    WHEN ((TO_DAYS(NOW()) - TO_DAYS((DATE_FORMAT(`fun`.`Fun_FechaIngreso`, '2015-%m-%d') - INTERVAL 1 DAY))) >= 366) THEN DATE_FORMAT(`fun`.`Fun_FechaIngreso`, '2016-%m-%d')
+                                    ELSE DATE_FORMAT(`fun`.`Fun_FechaIngreso`, '2015-%m-%d')
+                                END) USING UTF8) AND CONVERT( (CASE
+                                    WHEN ((TO_DAYS(NOW()) - TO_DAYS((DATE_FORMAT(`fun`.`Fun_FechaIngreso`, '2015-%m-%d') - INTERVAL 1 DAY))) >= 366) THEN (DATE_FORMAT(`fun`.`Fun_FechaIngreso`, '2017-%m-%d') - INTERVAL 1 DAY)
+                                    ELSE (DATE_FORMAT(`fun`.`Fun_FechaIngreso`, '2016-%m-%d') - INTERVAL 1 DAY)
+                                END) USING UTF8)))))
+            THEN
+                0
+            ELSE (SELECT 
+                    SUM(`per`.`Per_ValorCal`)
+                FROM
+                    (`permisos` `per`
+                    JOIN `tipopermiso` `tp` ON (((`per`.`Tiper_Id` = `tp`.`Tiper_Id`)
+                        AND (`tp`.`descuentoVacaciones` = 1))))
+                WHERE
+                    ((`per`.`Fun_Id` = `fun`.`Fun_Id`)
+                        AND (`per`.`Per_FechaInicio` BETWEEN CONVERT( (CASE
+                        WHEN ((TO_DAYS(NOW()) - TO_DAYS((DATE_FORMAT(`fun`.`Fun_FechaIngreso`, '2015-%m-%d') - INTERVAL 1 DAY))) >= 366) THEN DATE_FORMAT(`fun`.`Fun_FechaIngreso`, '2016-%m-%d')
+                        ELSE DATE_FORMAT(`fun`.`Fun_FechaIngreso`, '2015-%m-%d')
+                    END) USING UTF8) AND CONVERT( (CASE
+                        WHEN ((TO_DAYS(NOW()) - TO_DAYS((DATE_FORMAT(`fun`.`Fun_FechaIngreso`, '2015-%m-%d') - INTERVAL 1 DAY))) >= 366) THEN (DATE_FORMAT(`fun`.`Fun_FechaIngreso`, '2017-%m-%d') - INTERVAL 1 DAY)
+                        ELSE (DATE_FORMAT(`fun`.`Fun_FechaIngreso`, '2016-%m-%d') - INTERVAL 1 DAY)
+                    END) USING UTF8))))
+        END) AS `descuentos`,                             
 #------------------------------------------ DESCUENTO LABORALES--------------------------------------------------------------------------
         (case when (((case when isnull((
                         select
