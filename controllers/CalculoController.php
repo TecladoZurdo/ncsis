@@ -5,6 +5,8 @@ namespace app\controllers;
 use Yii;
 use app\models\Calculo;
 use app\models\CalculoSearch;
+use app\models\User;
+use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -17,6 +19,7 @@ use app\models\ViewCalculoSearch;
 use app\models\ViewTotal;
 use app\models\ViewPermiso;
 
+
 /**
  * CalculoController implements the CRUD actions for Calculo model.
  */
@@ -24,6 +27,7 @@ class CalculoController extends Controller {
 
     public function behaviors() {
         return [
+
             'verbs' => [
                 'class' => VerbFilter::className(),
                 'actions' => [
@@ -83,7 +87,15 @@ class CalculoController extends Controller {
      */
     public function actionCreate() {
         $CalculoActual = new Calculo();
-
+        
+        $identity = Yii::$app->user->identity;
+        $admin = false;
+        if ($identity != null) {
+            if ($identity->username == 'JPINEIROS'){
+                $admin = true;
+            }
+        }
+        
         if ($CalculoActual->load(Yii::$app->request->post())) {
           //  $CalculoAnterior= Calculo::findOne(['Fun_Id'=>$CalculoActual->Fun_Id,'activo'=>true]);
             // if ($CalculoAnterior === null){
@@ -98,7 +110,7 @@ class CalculoController extends Controller {
 
             return $this->redirect(['view', 'id' => $CalculoActual->Cal_Id]);
         } else {
-            return $this->render('create', [ 'model' => $CalculoActual,]);
+            return $this->render('create', [ 'model' => $CalculoActual, 'admin' => $admin]);
         }
     }
 
@@ -122,7 +134,14 @@ class CalculoController extends Controller {
     }
 
     public function actionCalcular() {
-        return $this->render('calcular');
+        $identity = Yii::$app->user->identity;
+        $admin = false;
+        if ($identity != null) {
+            if ($identity->username == 'JPINEIROS'){
+                $admin = true;
+            }
+        }
+        return $this->render('calcular', ['admin' => $admin]);
     }
 
     public function actionVacaciones() {

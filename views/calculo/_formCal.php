@@ -93,6 +93,7 @@ use yii\helpers\Url;
 
 
         <div class="col-lg-4">  
+           <?php if ($admin) { ?>
             <CENTER> 
                 <FONT  SIZE=4 COLOR=red>
                 <div class="form-group">
@@ -122,10 +123,8 @@ use yii\helpers\Url;
 
             echo Html::textInput('tot_lab', '', ['id' => 'tot_lab', 'class' => 'form-control', 'readonly' => 'readonly']);
 
-
-            
             ?>
-
+          <?php } ?>
         </div>
 
     </div>

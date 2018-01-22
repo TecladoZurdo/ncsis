@@ -134,6 +134,7 @@ use yii\helpers\Url;
 
 
         <div class="col-lg-4">
+            <?php if ($admin) { ?>
             <CENTER>
                 <FONT  SIZE=4 COLOR=red>
                 <div class="form-group">           
@@ -184,7 +185,7 @@ use yii\helpers\Url;
           
             <?= $form->field($model, 'Cal_DiasLab')->textInput(['readonly' => 'readonly']) ?>
 
-  <div class="form-group">
+            <div class="form-group">
 
                 <?php
                 //echo Html::label(' Total Días Generados + Saldo Anterior (Laborales: ojo aqui debe ir el total luego de restar permisos e inckur saldo anterior');
@@ -194,6 +195,7 @@ use yii\helpers\Url;
                 <?= $form->field($model, 'Cal_SalLab')->textInput(['readonly' => 'readonly']) ?>
             </div>
 
+            <?php } ?>
         </div>
 
 
