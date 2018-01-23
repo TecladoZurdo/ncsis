@@ -91,7 +91,7 @@ class CalculoController extends Controller {
         $identity = Yii::$app->user->identity;
         $admin = false;
         if ($identity != null) {
-            if ($identity->username == 'JPINEIROS'){
+            if ($identity->username == 'TALENTOHUMANO'){
                 $admin = true;
             }
         }
@@ -137,7 +137,7 @@ class CalculoController extends Controller {
         $identity = Yii::$app->user->identity;
         $admin = false;
         if ($identity != null) {
-            if ($identity->username == 'JPINEIROS'){
+            if ($identity->username == 'TALENTOHUMANO'){
                 $admin = true;
             }
         }
