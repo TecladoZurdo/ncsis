@@ -37,6 +37,7 @@ $(function () {
     $('#fec_fin').change(function () {
         $('#dias_cal_cal').focus();
         $('#dias_cal_lab').focus();
+        total_vac();
     });
 
     $('#dias_cal_cal').focus(function () {
@@ -51,7 +52,7 @@ $(function () {
         diasley($('#fun_id').val(), $('#fec_fin').val());
         var dias = calcular_duracion_lab($('#fec_inicio').val(), $('#fec_fin').val());
         $("#dias_cal_lab").val(dias);
-        total_vac();
+        
     });
 
 

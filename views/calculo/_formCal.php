@@ -118,7 +118,6 @@ use yii\helpers\Url;
             echo Html::textInput('num_per_lab', '', ['id' => 'num_per_lab', 'class' => 'form-control', 'readonly' => 'readonly']);
 
 
-
             echo Html::label('Total Días Calculados');
 
             echo Html::textInput('tot_lab', '', ['id' => 'tot_lab', 'class' => 'form-control', 'readonly' => 'readonly']);
