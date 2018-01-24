@@ -230,7 +230,7 @@ function calcular_duracion(fecha_ini, fecha_fin) {
         var dias = Math.floor(dif / (1000 * 60 * 60 * 24));
         dias = dias + 1;
         var factor = parseInt($('#dias_ley_lab').val()) + 11;
-        var vac = dias * factor / 365;
+        var vac = dias * factor / 360;
 
     }
     return vac;
@@ -248,7 +248,7 @@ function calcular_duracion_cal(fecha_ini, fecha_fin) {
         var dias = Math.floor(dif / (1000 * 60 * 60 * 24));
         dias = dias + 1;
         var factor = parseInt($('#dias_ley_cal').val()) + 15;
-        var vac = dias * factor / 365;
+        var vac = dias * factor / 360;
 
     }
     return vac;

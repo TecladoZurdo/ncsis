@@ -69,7 +69,7 @@ function calcular_duracion_cal(fecha_ini, fecha_fin) {
             var factor=15;    
         }
         
-        var vac = dias * factor / 365;
+        var vac = dias * factor / 360;
 
     }
 

@@ -130,7 +130,7 @@ function calcular_duracion_(fecha_ini, fecha_fin) {
         var dias = Math.floor(dif / (1000 * 60 * 60 * 24));
         dias = dias + 1;
         var factor = parseInt($('#dias_ley').val()) + 15;
-        var vac = dias * factor / 365;
+        var vac = dias * factor / 360;
 
     }
 

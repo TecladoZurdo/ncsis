@@ -72,7 +72,7 @@ function calcular_duracion_cal(fecha_ini, fecha_fin) {
         dias = dias + 1;
         console.log(dias);
         var factor = parseInt($('#dias_ley_cal').val()) + 15;
-        var vac = dias * factor / 365;
+        var vac = dias * factor / 360;
 
     }
 
