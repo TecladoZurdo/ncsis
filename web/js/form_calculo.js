@@ -211,8 +211,6 @@ function listapermisos() {
     var obj = jQuery.parseJSON(jsonData);
     obj.forEach(function (item, i) {
         $('#div_lista').append('<div class="col-lg-3" style="clear:both">' + item.permiso + '</div>');
-        //$('#div_lista').append('<div class="col-lg-2">' + item.fecha_inicio + '</div>');
-        //$('#div_lista').append('<div class="col-lg-2">' + item.fecha_final + '</div>');
         $('#div_lista').append('<div class="col-lg-2">' + item.dias + '</div>');
     });
 }

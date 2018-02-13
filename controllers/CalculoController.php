@@ -74,9 +74,15 @@ class CalculoController extends Controller {
      * @param integer $id
      * @return mixed
      */
-    public function actionView($id) {
+    public function actionView($id,$funId,$saldoAnterior,$diasXley,$diasXantiguedad, $totalDescuentos) {
+
+        $model = $this->findViewModel($id);
+        $row_set = $this->queryViewPermiso($funId,$model->Cal_FechaInicio, $model->Cal_FechaFin);
+        
+
         return $this->render('view', [
-                    'model' => $this->findViewModel($id),
+                    'model' => $model,'funId'=>$funId,'row_set'=>$row_set,'saldoAnterior'=>$saldoAnterior,
+                    'diasXley' => $diasXley, 'diasXantiguedad'=>$diasXantiguedad, 'totalDescuentos'=>$totalDescuentos
         ]);
     }
 
@@ -97,18 +103,16 @@ class CalculoController extends Controller {
         }
         
         if ($CalculoActual->load(Yii::$app->request->post())) {
-          //  $CalculoAnterior= Calculo::findOne(['Fun_Id'=>$CalculoActual->Fun_Id,'activo'=>true]);
-            // if ($CalculoAnterior === null){
+                 $funId = $CalculoActual->Fun_Id;
+                 $saldoAnterior = Yii::$app->request->post("vac_acu_cal");
+                 $diasXley = Yii::$app->request->post("vac_dias_cal");
+                 $diasXantiguedad = Yii::$app->request->post("dias_ley_cal");
+                 $totalDescuentos = Yii::$app->request->post("num_per_cal");
+                 
                  $CalculoActual->save();
-            // }else{
-            // Calculo::getDb()->transaction(function($db) use ($CalculoActual,$CalculoAnterior){
-            //     $CalculoAnterior->activo = false;
-            //     $CalculoActual->save();
-            // });
-            // }
-
-
-            return $this->redirect(['view', 'id' => $CalculoActual->Cal_Id]);
+            return $this->redirect(['view', 'id' => $CalculoActual->Cal_Id,
+                'funId'=>$funId,'saldoAnterior'=>$saldoAnterior, 'diasXley'=>$diasXley,
+                'diasXantiguedad'=>$diasXantiguedad, 'totalDescuentos'=>$totalDescuentos]);
         } else {
             return $this->render('create', [ 'model' => $CalculoActual, 'admin' => $admin]);
         }
@@ -274,11 +278,9 @@ class CalculoController extends Controller {
         $valores['tot_lab'] = $val_lab !== null ? $val_lab : 0;
         return $valores;
     }
-    public function actionListapermisos() {
+
+    public function queryViewPermiso($id, $fecha_inicio, $fecha_fin) {
         $query = ViewPermiso::find();
-        $id = Yii::$app->request->post("id");
-        $fecha_inicio = Yii::$app->request->post("fecha_inicio");
-        $fecha_fin = Yii::$app->request->post("fecha_fin");
         $registro = $query->select(['Tiper_Nombre'])->from('view_permiso')
                 ->where(['between', 'Per_FechaInicio', $fecha_inicio, $fecha_fin])
                 ->where(['between', 'Per_FechaFinal', $fecha_inicio, $fecha_fin])
@@ -297,8 +299,22 @@ class CalculoController extends Controller {
             $new_row['dias'] = '';
             $row_set[] = $new_row;
         }
+
+        return $row_set;
+    }
+
+    public function actionListapermisos() {
+
+        $id = Yii::$app->request->post("id");
+        $fecha_inicio = Yii::$app->request->post("fecha_inicio");
+        $fecha_fin = Yii::$app->request->post("fecha_fin");
+        
+        $row_set = $this->queryViewPermiso($id,$fecha_inicio,$fecha_fin);
+        
         echo json_encode($row_set);
     }
+
+    
 
     public function sumaPermisos($nombre, $fecha_inicio, $fecha_fin, $id) {
         $query = ViewPermiso::find();
@@ -421,6 +437,7 @@ class CalculoController extends Controller {
                 $valores['calculo_cal_sallab']=$subTotalL+$saldoAcumuladoL;
     echo json_encode($valores);
  }
+
 
 public function diasTrancurridos($fechaInicio,$fechaFinal){
   $fechaActual =  new \DateTime(date('Y-m-d'));
@@ -631,8 +648,15 @@ public function diasTrancurridos($fechaInicio,$fechaFinal){
         }
 
         if ($anio_completo){ // sumo 1 dia
+            if ($dias_cal == 15)
+            {
+            $valores['dias_lab'] = $dias_lab;
+            $valores['dias_cal'] = $dias_cal;
+            }    else {
             $valores['dias_lab'] = $dias_lab + 1;
-            $valores['dias_cal'] = $dias_cal + 1;
+            $valores['dias_cal'] = $dias_cal + 1;    
+            }
+            
         }else {  //-- calculo normal
             $valores['dias_lab'] = $dias_lab;
             $valores['dias_cal'] = $dias_cal;
