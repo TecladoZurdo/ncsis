@@ -30,6 +30,7 @@ $this->params['breadcrumbs'][] = $this->title;
             ['class' => '\kartik\grid\SerialColumn'],
             'Fun_Apellidos',
             'Fun_Nombres',
+            'Fun_Cedula',
             'fechaactual',
             'iniperiodo',
             'finperiodo',

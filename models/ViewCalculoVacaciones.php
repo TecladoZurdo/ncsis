@@ -28,6 +28,7 @@ class ViewCalculoVacaciones extends \yii\db\ActiveRecord{
     public function rules() {
     return [
         [['Fun_Apellidos','Fun_Nombres'],'string','max'=>400],
+        [['Fun_Cedula'],'string','max'=>10],
         [['iniperiodo','finperiodo','fechaactual'],'date','format'=>'yy-m-d'],
         ['loep'],
         [['antiguedad','descuentos','descuentoslaborables','saldoanterior','saldoanteriorLab','total','diasdevengados'],'integer']
@@ -41,6 +42,7 @@ class ViewCalculoVacaciones extends \yii\db\ActiveRecord{
         return [
            'Fun_Apellidos' => 'Apellidos',
            'Fun_Nombres' => 'Nombres' ,
+           'Fun_Cedula' => 'Cédula',
            'iniperiodo'=>'Inicio de Período',
             'fechaactual'=>'Fecha Actual',
            'finperiodo'=>'Fin de Período',
