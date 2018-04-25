@@ -3,6 +3,7 @@ create view viewcalculovacaciones as
 select
      `fun`.`Fun_Apellidos` AS `Fun_Apellidos`,
     `fun`.`Fun_Nombres` AS `Fun_Nombres`,
+    `fun`.`Fun_Cedula` AS `Fun_Cedula`,
     `fun`.`Fun_FechaIngreso` AS `Fun_FechaIngreso`,      
 #---------------------------------------------- INICIO PERIODOD -------------------------------------------------------------    
      date_format(InicioPeriodo(Fun_FechaIngreso),'%Y-%m-%d') as `iniperiodo`, 
